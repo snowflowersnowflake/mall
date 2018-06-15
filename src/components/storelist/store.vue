@@ -238,7 +238,7 @@ export default {
             border: none;
             color: #fff;
             line-height: 40 / @r;
-            background: linear-gradient(left, #02aaff, #0286ff);
+            background: linear-gradient(to right, #02aaff, #0286ff);
           }
         }
       }

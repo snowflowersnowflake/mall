@@ -6,34 +6,34 @@
                 <p>丰盛晚餐9.9元起</p>
                 <section>
                     <span>2757人</span>正在抢></section>
-                <img src="/static/index/blank-1.png" alt="">
+                <img src="static/index/blank-1.png" alt="">
             </li>
             <li>
                 <h3>周4水果日</h3>
                 <p>大牌满立减20元</p>
                 <section>新鲜抢购></section>
-                <img src="/static/index/blank-2.png" alt="">
+                <img src="static/index/blank-2.png" alt="">
             </li>
         </ul>
         <ul class="h2">
             <li>
                 <h4>大牌夜市</h4>
                 <section>不止立减30</section>
-                <img src="/static/index/blank-2-1.png" alt="">
+                <img src="static/index/blank-2-1.png" alt="">
             </li>
             <li>
                 <h4>品质联盟</h4>
                 <section>品质升级 消费亲民</section>
-                <img src="/static/index/blank-2-2.png" alt="">
+                <img src="static/index/blank-2-2.png" alt="">
             </li>
             <li>
                 <h4>猜你喜欢</h4>
                 <section>沙拉</section>
-                <img src="/static/index/blank-2-3.png" alt="">
+                <img src="static/index/blank-2-3.png" alt="">
             </li>
         </ul>
         <section class="h3">
-            <img src="/static/index/blank-3.png" alt="">
+            <img src="static/index/blank-3.png" alt="">
         </section>
         <div class="blank">
             <div class="head">
@@ -68,22 +68,22 @@ export default {
         {
           title: "老乡鸡",
           tag: "大牌精选",
-          imgUrl: "/static/index/laoxiangji.png"
+          imgUrl: "static/index/laoxiangji.png"
         },
         {
           title: "香他她煲仔饭",
           tag: "大牌精选",
-          imgUrl: "/static/index/xiangtata.png"
+          imgUrl: "static/index/xiangtata.png"
         },
         {
           title: "曼玲粥店",
           tag: "大牌精选",
-          imgUrl: "/static/index/manlingzhoudian.png"
+          imgUrl: "static/index/manlingzhoudian.png"
         },
         {
           title: "大米先生",
           tag: "大牌精选",
-          imgUrl: "/static/index/dami.png"
+          imgUrl: "static/index/dami.png"
         }
       ]
     };

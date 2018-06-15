@@ -25,7 +25,7 @@
                   </section>
                   <section>
                     <p>抓龙虾<br>拿红包</p>
-                    <img src="/static/index/shrimp.png" alt="">
+                    <img src="static/index/shrimp.png" alt="">
                   </section>
                 </section>
               </div>
@@ -40,7 +40,7 @@
               </ul>
             </header>
             <section class="banner">
-              <img src="/static/index/banner.png" alt="">
+              <img src="static/index/banner.png" alt="">
             </section>
             <classification />
             <blank />
@@ -156,7 +156,7 @@ export default {
   }
   header {
     flex-shrink: 0;
-    background: linear-gradient(left, #02aaff, #0286ff);
+    background: linear-gradient(to right, #02aaff, #0286ff);
 
     .hideable {
       padding-top: 135 / @r;

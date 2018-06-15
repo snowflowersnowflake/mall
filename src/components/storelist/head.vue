@@ -29,7 +29,7 @@
         <div class="block_1">
           <ul>
             <li v-for="(item,key) in filter.fw" :key="key" :class="{'active':filterData[key].checked}" @click="setFilterData(key)">
-              <img :src="'/static/filter/'+key+'.png'" alt="">
+              <img :src="'static/filter/'+key+'.png'" alt="">
               <span>{{item.title}}</span>
             </li>
           </ul>

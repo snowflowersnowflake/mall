@@ -23,35 +23,35 @@ export default {
       },
       banners: [
         {
-          imgUrl: "/static/index/ad1.png",
+          imgUrl: "static/index/ad1.png",
           link: ""
         },
         {
-          imgUrl: "/static/index/ad2.png",
+          imgUrl: "static/index/ad2.png",
           link: ""
         },
         {
-          imgUrl: "/static/index/ad1.png",
+          imgUrl: "static/index/ad1.png",
           link: ""
         },
         {
-          imgUrl: "/static/index/ad2.png",
+          imgUrl: "static/index/ad2.png",
           link: ""
         },
         {
-          imgUrl: "/static/index/ad1.png",
+          imgUrl: "static/index/ad1.png",
           link: ""
         },
         {
-          imgUrl: "/static/index/ad2.png",
+          imgUrl: "static/index/ad2.png",
           link: ""
         },
         {
-          imgUrl: "/static/index/ad1.png",
+          imgUrl: "static/index/ad1.png",
           link: ""
         },
         {
-          imgUrl: "/static/index/ad2.png",
+          imgUrl: "static/index/ad2.png",
           link: ""
         }
       ]

@@ -1,6 +1,6 @@
 export default [
     {
-        img_url: "/static/shops/logo_01.png",
+        img_url: "static/shops/logo_01.png",
         title: "华莱士(中南七星店)",
         score: 4.7,
         onoff: false,
@@ -46,7 +46,7 @@ export default [
         show_offer: false
     },
     {
-        img_url: "/static/shops/logo_02.png",
+        img_url: "static/shops/logo_02.png",
         title: "姑娘手肉夹馍",
         score: 4.9,
         onoff: false,
@@ -76,7 +76,7 @@ export default [
         show_offer: false
     },
     {
-        img_url: "/static/shops/logo_03.png",
+        img_url: "static/shops/logo_03.png",
         title: "一笼汤包",
         score: 4.9,
         onoff: false,
@@ -106,7 +106,7 @@ export default [
         show_offer: false
     },
     {
-        img_url: "/static/shops/logo_04.png",
+        img_url: "static/shops/logo_04.png",
         title: "港饮之都",
         score: 4.9,
         onoff: false,
@@ -136,7 +136,7 @@ export default [
         show_offer: false
     },
     {
-        img_url: "/static/shops/logo_01.png",
+        img_url: "static/shops/logo_01.png",
         title: "姑娘手肉夹馍",
         score: 4.9,
         onoff: false,
@@ -166,7 +166,7 @@ export default [
         show_offer: false
     },
     {
-        img_url: "/static/shops/logo_02.png",
+        img_url: "static/shops/logo_02.png",
         title: "姑娘手肉夹馍",
         score: 4.9,
         onoff: false,
