@@ -2,10 +2,10 @@
   <div class="page">
     <header id="fake_head">
       <div class="search_wrap" v-show="showHead">
-        <label class="search-box">
+        <div class="search-box">
           <i class="el-icon-search"></i>
           <input type="text" placeholder="请输入商家、商品名称" v-model="searchKey">
-        </label>
+        </div>
       </div>
       <storelist class="store_nav" @srollTotop="srollTotop" @openshadow="openshadow" v-show="showFakeNav" />
     </header>

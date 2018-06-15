@@ -3,7 +3,7 @@
         <div class="scroll">
             <scroll>
                 <div class="wrap">
-                    <lisss></lisss>
+                    <ss></ss>
                 </div>
 
             </scroll>
@@ -15,7 +15,7 @@
 <script>
 import scroll from "@/components/scroll";
 import storelist from '@/components/storelist/head'
-import lisss from '@/components/storelist/store'
+import ss from '@/page/store'
 export default {
   data() {
     return {
@@ -25,7 +25,7 @@ export default {
   components: {
     scroll,
     storelist,
-    lisss
+    ss
   }
 };
 </script>
