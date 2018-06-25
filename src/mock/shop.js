@@ -1,5 +1,6 @@
 export default [
     {
+        id:1,
         img_url: "static/shops/logo_01.png",
         title: "华莱士(中南七星店)",
         score: 4.7,
@@ -11,6 +12,7 @@ export default [
         average_price:20,
         distance: 200,
         tag: '炸鸡炸串',
+        notice:'欢迎光临,用餐高峰请提前下单欢迎光临,用餐高峰请提前下单欢迎光临,用餐高峰请提前下单欢迎光临,用餐高峰请提前下单',
         offer: {
             sd: {
                 status: true,
@@ -46,6 +48,7 @@ export default [
         show_offer: false
     },
     {
+        id:2,
         img_url: "static/shops/logo_02.png",
         title: "姑娘手肉夹馍",
         score: 4.9,
@@ -56,6 +59,7 @@ export default [
         average_time: 20,
         distance: 1596,
         tag: '地方小吃',
+        notice:'欢迎光临,用餐高峰请提前下单欢迎光临,用餐高峰请提前下单欢迎光临,用餐高峰请提前下单欢迎光临,用餐高峰请提前下单',
         offer: {
             sd: {
                 status: true,
@@ -76,6 +80,7 @@ export default [
         show_offer: false
     },
     {
+        id:3,
         img_url: "static/shops/logo_03.png",
         title: "一笼汤包",
         score: 4.9,
@@ -86,6 +91,7 @@ export default [
         average_time: 20,
         distance: 1596,
         tag: '地方小吃',
+        notice:'欢迎光临,用餐高峰请提前下单欢迎光临,用餐高峰请提前下单欢迎光临,用餐高峰请提前下单欢迎光临,用餐高峰请提前下单',
         offer: {
             sd: {
                 status: true,
@@ -106,6 +112,7 @@ export default [
         show_offer: false
     },
     {
+        id:4,
         img_url: "static/shops/logo_04.png",
         title: "港饮之都",
         score: 4.9,
@@ -116,6 +123,7 @@ export default [
         average_time: 20,
         distance: 1596,
         tag: '地方小吃',
+        notice:'欢迎光临,用餐高峰请提前下单欢迎光临,用餐高峰请提前下单欢迎光临,用餐高峰请提前下单欢迎光临,用餐高峰请提前下单',
         offer: {
             sd: {
                 status: true,
@@ -136,8 +144,9 @@ export default [
         show_offer: false
     },
     {
+        id:5,
         img_url: "static/shops/logo_01.png",
-        title: "姑娘手肉夹馍",
+        title: "华莱士",
         score: 4.9,
         onoff: false,
         sales: 2521,
@@ -146,6 +155,7 @@ export default [
         average_time: 20,
         distance: 1596,
         tag: '地方小吃',
+        notice:'欢迎光临,用餐高峰请提前下单欢迎光临,用餐高峰请提前下单欢迎光临,用餐高峰请提前下单欢迎光临,用餐高峰请提前下单',
         offer: {
             sd: {
                 status: true,
@@ -166,6 +176,7 @@ export default [
         show_offer: false
     },
     {
+        id:6,
         img_url: "static/shops/logo_02.png",
         title: "姑娘手肉夹馍",
         score: 4.9,
@@ -176,6 +187,7 @@ export default [
         average_time: 20,
         distance: 1596,
         tag: '地方小吃',
+        notice:'欢迎光临,用餐高峰请提前下单欢迎光临,用餐高峰请提前下单欢迎光临,用餐高峰请提前下单欢迎光临,用餐高峰请提前下单',
         offer: {
             sd: {
                 status: true,

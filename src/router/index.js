@@ -15,48 +15,63 @@ import Seller from '@/page/store/seller/seller'
 Vue.use(Router)
 
 export default new Router({
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition && to.meta.keepAlive) {
+      let scrollTop = store.state.common.scrollPos[to.name] || 0
+      if (!scrollTop) {
+        return
+      }
+      // 对scroll元素进行设置
+      setTimeout(() => {
+        let documentElem = document.querySelector('.v-content')
+        if (documentElem) {
+          documentElem.scrollTop = scrollTop
+        }
+      }, 0)
+    }
+  },
   routes: [
     {
       path: '/',
       name: 'Main',
       component: Main,
-      redirect:'/index',
-      children:[
+      redirect: '/index',
+      children: [
         {
-          path:'index',
+          path: 'index',
           component: CusIndex,
         },
         {
-          path:'found',
+          path: 'found',
           component: Found,
-        },{
-          path:'bills',
+        }, {
+          path: 'bills',
           component: Bills,
-        },{
-          path:'center',
+        }, {
+          path: 'center',
           component: Center,
         },
       ]
     },
     {
-      path:'/store',
-      name:'Store',
-      component:Store,
-      redirect:'/store/product',
-      children:[
+      path: '/store',
+      name: 'Store',
+      component: Store,
+      redirect: '/store/product',
+      children: [
         {
-          path:'product',
-          name:'product',
+          path: 'product',
+          name: 'product',
           component: Product
         },
         {
-          path:'evaluation',
-          name:'evaluation',
+          path: 'evaluation',
+          name: 'evaluation',
           component: Evaluation
         },
         {
-          path:'seller',
-          name:'seller',
+          path: 'seller',
+          name: 'seller',
           component: Seller
         }
       ]

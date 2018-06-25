@@ -1,6 +1,6 @@
 <template>
   <div class="store_wrap" :class="{pb1000:completeData.length<4}">
-    <div class="shop" v-for="(item,index) in completeData" :key="index">
+    <router-link tag="div" :to="{path:'/store/product',query:{id:item.id}}" class="shop" v-for="(item,index) in completeData" :key="index">
       <div class="logo">
         <img :src="item.img_url" alt="">
       </div>
@@ -34,7 +34,7 @@
           <span>{{item.tag}}</span>
         </div>
         <div class="offer">
-          <div v-show="offer_fillter(item.offer).length_>2" class="show" @click="offer_switch(index)">
+          <div v-show="offer_fillter(item.offer).length_>2" class="show" @click.prevent="offer_switch(index)">
             <i :class="{'el-icon-arrow-down':!item.show_offer,'el-icon-arrow-up':item.show_offer}"></i>
           </div>
           <ul :class="{'close':!item.show_offer}">
@@ -46,7 +46,7 @@
         </div>
 
       </div>
-    </div>
+    </router-link>
   </div>
 </template>
 

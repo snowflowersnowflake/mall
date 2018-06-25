@@ -2,70 +2,56 @@
   <div class="store_page">
     <header>
       <div class="header_wrap">
-        <a href="" class="back">
+        <div @click="$router.back()" class="back">
           <i></i>
-        </a>
-
+        </div>
         <div class="search-box">
-          <div class="search_wrap" ref="search" v-show="mult&&mult<0.9">
+          <div class="search_wrap" ref="search" v-show="mult&&mult<0.9||mult===0">
             <i class="el-icon-search"></i>
             <input type="text" placeholder="请输入商家、商品名称">
           </div>
         </div>
-
         <div class="hide_el" ref="hide_el"></div>
       </div>
 
-      <div class="shadow_img"></div>
+      <div class="shadow_img" :style="{'background-image':`url(${store_msg.img_url})`}"></div>
     </header>
     <div class="store_msg_wrap">
       <div class="logo_wrap" ref="logo" v-show="mult===false||mult>0.2">
-        <img src="static/shops/logo_01.png" alt="">
+        <img :src="store_msg.img_url" alt="">
       </div>
       <div class="collection" ref="collection" v-show="mult===false||mult>0.2">
         <i class="el-icon-star-off"></i>
       </div>
       <div class="store_msg" ref="store_msg">
-        <h3>商店名字</h3>
+        <h3>{{store_msg.title}}</h3>
         <div class="base_info">
-          <span>评价4.4</span>|
-          <span>月售1691</span>|
-          <span>蜂鸟快送月25分钟</span>
+          <span>评价{{store_msg.score}}</span>|
+          <span>月售{{store_msg.sales}}</span>|
+          <span>蜂鸟快送约{{store_msg.average_time}}分钟</span>
         </div>
         <div class="unfold" :style="{'opacity':outerOpacity}" @click="showDtail=!showDtail">
           <div class="offer_flex_wrap">
             <ul class="offer_list">
               <li>
-                <span class="mj">满减</span>
-                <p>满25减12，满40减18，满65减25</p>
+                <span :class="first_offer.class">{{first_offer.obj&&first_offer.obj.title}}</span>
+                <p>{{first_offer.obj&&first_offer.obj.text}}</p>
               </li>
             </ul>
-            <div class="text">4个优惠
+            <div class="text">{{first_offer.len}}个优惠
               <i class="el-icon-arrow-down"></i>
             </div>
           </div>
-          <p>欢迎光临,用餐高峰请提前下单欢迎光临,用餐高峰请提前下单欢迎光临,用餐高峰请提前下单欢迎光临,用餐高峰请提前下单</p>
+          <p>{{store_msg.notice}}</p>
         </div>
       </div>
     </div>
     <div class="hide_able" :style="{'bottom':detailBottom,'opacity':1-outerOpacity}">
       <div class="title">优惠</div>
       <ul class="offer_list">
-        <li>
-          <span class="mj">满减</span>
-          <p>满25减12，满40减18，满65减25</p>
-        </li>
-        <li>
-          <span class="mj">满减</span>
-          <p>满25减12，满40减18，满65减25</p>
-        </li>
-        <li>
-          <span class="mj">满减</span>
-          <p>满25减12，满40减18，满65减25</p>
-        </li>
-        <li>
-          <span class="mj">满减</span>
-          <p>满25减12，满40减18，满65减25</p>
+        <li v-for="(item,key) in store_msg.offer" :key="key">
+          <span :class="key">{{item.title}}</span>
+          <p>{{item.text}}</p>
         </li>
       </ul>
       <div class="title">服务</div>
@@ -80,20 +66,20 @@
         </li>
       </ul>
       <div class="title">公告</div>
-      <p>欢迎光临,用餐高峰请提前下单</p>
+      <p>{{store_msg.notice}}</p>
       <div class="shrink" @click="showDtail=!showDtail">
         <section></section>
         <i class="el-icon-arrow-up"></i>
       </div>
     </div>
     <div class="store_nav">
-      <router-link class="nav_title" tag="div" to="product">
+      <router-link class="nav_title" replace tag="div" :to="{path:'product',query:{id:$route.query.id}}">
         <span>商品</span>
       </router-link>
-      <router-link class="nav_title" tag="div" to="evaluation">
+      <router-link class="nav_title" replace tag="div" :to="{path:'evaluation',query:{id:$route.query.id}}">
         <span>评价</span>
       </router-link>
-      <router-link class="nav_title" tag="div" to="seller">
+      <router-link class="nav_title" replace tag="div" :to="{path:'seller',query:{id:$route.query.id}}">
         <span>商家</span>
       </router-link>
       <div class="hook" :style="{'transform':hook_translate.pos,'width':hook_translate.wid}"></div>
@@ -101,7 +87,7 @@
     <div class="show_content">
       <keep-alive>
         <transition name="fade" mode="out-in">
-          <router-view @scroll="productScroll"></router-view>
+          <router-view @scroll="productScroll" ref="child"></router-view>
         </transition>
       </keep-alive>
 
@@ -111,22 +97,24 @@
 </template>
 
 <script>
-import json from "@/mock/products";
+import arr from "@/mock/shop";
+import { mapMutations } from "vuex";
 export default {
   data() {
     return {
       showDtail: false,
       activeName: "active",
       navIndex: null,
-      store_msg: json,
-      mult: false
+      mult: false,
+      store_msg: {}
     };
   },
   methods: {
     productScroll(pos) {
       var y = Math.abs(pos.y);
-      if (pos.y < 0 && y <= hide_height) {
-        let mult = 1 - y / hide_height;
+      if (pos.y < 0) {
+        var percent = y / hide_height > 1 ? 1 : y / hide_height;
+        let mult = 1 - percent;
         this.mult = mult;
         this.$refs.hide_el.style.height = h1 * mult + "px";
         this.$refs.store_msg.style.height = h2 * mult + "px";
@@ -138,7 +126,18 @@ export default {
           collectionH * mult + "px";
         this.$refs.collection.style.fontSize = collectionFz * mult + "px";
       }
-    }
+    },
+    init__() {
+      var id = this.$route.query.id || 1;
+      for (var i = 0; i < arr.length; i++) {
+        if (arr[i].id == id) {
+          this.store_msg = arr[i];
+          this.setStore_(this.store_msg);
+          return;
+        }
+      }
+    },
+    ...mapMutations(["setStore_"])
   },
   computed: {
     detailBottom() {
@@ -161,6 +160,26 @@ export default {
         el[this.navIndex] && el[this.navIndex].innerHTML
       ); */
       return "inherit";
+    },
+    first_offer() {
+      var offer = this.store_msg.offer;
+      var re_obj = {
+        obj: null,
+        len: 0,
+        class: ""
+      };
+      if (offer) {
+        for (var attr in offer) {
+          if (offer[attr].status) {
+            if (re_obj.len === 0) {
+              re_obj.obj = offer[attr];
+              re_obj.class = attr;
+            }
+            re_obj.len++;
+          }
+        }
+      }
+      return re_obj;
     }
   },
   mounted() {
@@ -179,7 +198,7 @@ export default {
         break;
     }
     window.h1 = this.$refs.hide_el.offsetHeight;
-    window.h2 = this.$refs.store_msg.offsetHeight;
+    window.h2 = this.$refs.store_msg.clientHeight;
     window.hide_height = h1 + h2;
     window.logoH = this.$refs.logo.offsetHeight;
     window.collectionH = this.$refs.collection.offsetHeight;
@@ -187,6 +206,8 @@ export default {
       .getComputedStyle(this.$refs.collection, null)
       .getPropertyValue("font-size");
     window.collectionFz = parseFloat(collectionFz);
+
+    this.init__();
   },
   watch: {
     $route(to, from) {
@@ -340,7 +361,7 @@ export default {
   .store_msg_wrap {
     flex: none;
     position: relative;
-    z-index: 30;
+    z-index: 10;
     .logo_wrap {
       position: absolute;
       width: 228 / @r;
@@ -375,6 +396,7 @@ export default {
       }
     }
     .store_msg {
+      height: 440 / @r;
       overflow: hidden;
       h3 {
         padding-top: 92 / @r;
@@ -449,6 +471,7 @@ export default {
     > p {
       font-size: 32 / @r;
       color: #666;
+      line-height: 42 / @r;
     }
     .shrink {
       position: absolute;

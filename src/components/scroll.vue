@@ -1,5 +1,5 @@
 <template>
-    <div ref="wrapper">
+    <div class="bs_wrap" ref="wrapper">
         <slot></slot>
     </div>
 </template>
@@ -160,4 +160,8 @@ export default {
 </script>
 
 <style scoped>
+.bs_wrap {
+  height: 100%;
+  position: relative;
+}
 </style>

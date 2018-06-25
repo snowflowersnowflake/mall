@@ -33,11 +33,14 @@
                       限量抢购
                     </div>
                     <div class="recommend" v-if="product.is_recommend">老板推荐</div>
-                    <div class="price">
-                      ￥
-                      <strong>{{product.is_discount?product.real_price:product.price[0].price}}</strong>
-                      <span v-if="product.is_discount">￥{{product.price[0].price}}</span>
-                      <em v-if="product.price.length>1">起</em>
+                    <div class="price_box">
+                      <div class="price">
+                        ￥
+                        <strong>{{product.is_discount?product.real_price:product.price[0].price}}</strong>
+                        <span v-if="product.is_discount">￥{{product.price[0].price}}</span>
+                        <em v-if="product.price.length>1">起</em>
+                      </div>
+                      <operating @ballDown="ballDown" :food="product"></operating>
                     </div>
                   </div>
                 </li>
@@ -48,7 +51,7 @@
       </div>
     </div>
     <div class="shopCart_wrap">
-
+      <cart ref="cart" :store_msg="store_msg" :foods="cartFoods"></cart>
     </div>
 
   </div>
@@ -57,48 +60,81 @@
 <script>
 import json from "@/mock/products";
 import scroll from "@/components/scroll";
+import cart from "./shopCart";
+import operating from "./cartOperating";
 export default {
   data() {
     return {
-      data: json.products_class,
+      data: [],
       active_index: 0,
       scrollY: 0,
-      height_arr: []
+      height_arr: [],
+      shopCart: {}
     };
   },
   methods: {
     rightScroll(pos) {
       this.scrollY = Math.abs(Math.round(pos.y));
-      this.$emit('scroll',pos)
+      this.$emit("scroll", pos);
     },
-    scrollToClass(index){
-      var el = this.$refs.productList.querySelectorAll('li.height_hook')[index];
-      this.$refs.rightScroll.scrollToElement(el,500)
+    scrollToClass(index) {
+      this.$refs.rightScroll.refresh();
+      var el = this.$refs.productList.querySelectorAll("li.height_hook")[index];
+      this.$refs.rightScroll.scrollToElement(el, 500);
+    },
+    ballDown(el) {
+      this.$refs.cart.ballDown(el);
     }
   },
   computed: {
     clacIndex() {
       var arr = this.height_arr,
         scrollY = this.scrollY;
+
       for (var i = 0; i < arr.length; i++) {
         if (scrollY >= arr[i] && scrollY < arr[i + 1]) {
           return i;
         }
       }
+    },
+    cartFoods() {
+      let foods = [];
+      this.data.forEach(item => {
+        item.products.forEach(food => {
+          if (food.cartCount) {
+            foods.push(food);
+          }
+        });
+      });
+      return foods;
+    },
+    store_msg() {
+      return this.$store.state.store.store_
     }
   },
   mounted() {
-    var Ali = this.$refs.productList.querySelectorAll("li.height_hook");
-    var h = 0;
-    this.height_arr.push(h);
-    for (let i = 0; i < Ali.length; i++) {
-      h += Ali[i].offsetHeight;
+    this.data = json.products_class.map(item => {
+      item.products.forEach(item2 => {
+        item2.cartCount = 0;
+      });
+      return item;
+    });
+
+    this.$nextTick(() => {
+      var Ali = this.$refs.productList.querySelectorAll('.height_hook');
+      var h = 0;
       this.height_arr.push(h);
-    }
+      for (let i = 0; i < Ali.length; i++) {
+        h += Ali[i].offsetHeight;
+        this.height_arr.push(h);
+      }
+    });
   },
   components: {
-    scroll
-  }
+    scroll,
+    cart,
+    operating
+  },
 };
 </script>
 
@@ -123,12 +159,12 @@ export default {
       flex: none;
       height: 100%;
       background-color: #f8f8f8;
-      width: 300 / @r;
+      width: 240 / @r;
       ul {
         li {
           height: 145 / @r;
           background-color: #f8f8f8;
-          font-size: #666;
+          color: #666;
           font-size: 38 / @r;
           line-height: 140 / @r;
           text-align: center;
@@ -196,6 +232,7 @@ export default {
                 }
               }
               .product_info {
+                width: 590 / @r;
                 h4 {
                   font-size: 44 / @r;
                   line-height: 54 / @r;
@@ -239,18 +276,22 @@ export default {
                   text-align: center;
                   border-radius: 4 / @r;
                 }
-                .price {
-                  font-size: 28 / @r;
-                  color: #ff5339;
-                  font-weight: bold;
-                  strong {
-                    font-size: 40 / @r;
-                  }
-                  span {
-                    color: #999;
-                    text-decoration: solid line-through #999;
-                  }
-                  em {
+                .price_box {
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  width: 100%;
+                  .price {
+                    font-size: 28 / @r;
+                    color: #ff5339;
+                    font-weight: bold;
+                    strong {
+                      font-size: 40 / @r;
+                    }
+                    span {
+                      color: #999;
+                      text-decoration: solid line-through #999;
+                    }
                   }
                 }
               }
@@ -266,7 +307,6 @@ export default {
     left: 0;
     width: 100%;
     height: 143 / @r;
-    background-color: #000;
   }
 }
 </style>
