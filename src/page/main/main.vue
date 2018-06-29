@@ -36,6 +36,7 @@ export default {
   .body {
     flex-grow: 1;
     flex-shrink: 1;
+    height: 100%;
     display: flex;
     flex-direction: column;
     overflow: hidden;

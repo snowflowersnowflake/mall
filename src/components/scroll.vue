@@ -1,7 +1,7 @@
 <template>
-    <div class="bs_wrap" ref="wrapper">
-        <slot></slot>
-    </div>
+  <div class="bs_wrap" ref="wrapper">
+    <slot></slot>
+  </div>
 </template>
 
 <script>
@@ -102,7 +102,7 @@ export default {
 
       // 是否派发滚动到底部事件，用于上拉加载
       if (this.pullup) {
-        this.scroll.on("scrollEnd", () => {
+        this.scroll.on("scrollEnd", (pos) => {
           // 滚动到底部
           if (this.scroll.y <= this.scroll.maxScrollY + 50) {
             this.$emit("scrollToEnd");
@@ -163,5 +163,6 @@ export default {
 .bs_wrap {
   height: 100%;
   position: relative;
+  overflow: hidden;
 }
 </style>

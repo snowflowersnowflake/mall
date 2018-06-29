@@ -66,11 +66,11 @@ import advertising from "./advertising";
 import storelist from "@/components/storelist/head";
 import lisss from "@/components/storelist/store";
 import BScroll from "better-scroll";
-import storeData from '@/mock/shop'
+import storeData from "@/mock/shop";
 export default {
   data() {
     return {
-      address: "中建三局-写字楼",
+      address: "",
       searchKey: "",
       tags: [
         "麻辣香锅",
@@ -136,8 +136,18 @@ export default {
     window.storreNavHeight = this.$refs.storeNav.offsetHeight;
     window.indexWrapHeight = this.$refs.index_wrap.offsetHeight;
     window.storeNavNote = document.querySelector(".store_nav");
+    AMap.plugin("AMap.CitySearch", ()=> {
+      var citySearch = new AMap.CitySearch();
+      citySearch.getLocalCity((status, result)=> {
+        if (status === "complete" && result.info === "OK") {
+          this.address = result.city
+          // 查询成功，result即为当前所在城市信息
+        }
+      });
+    });
   }
 };
+
 </script>
 
 <style scoped lang='less'>
@@ -156,7 +166,7 @@ export default {
   }
   header {
     flex-shrink: 0;
-    background: linear-gradient(to right, #02aaff, #0286ff);
+    background: linear-gradient(to right, #02aaff, #0387ff);
 
     .hideable {
       padding-top: 135 / @r;

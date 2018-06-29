@@ -20,8 +20,8 @@
       <div class="logo_wrap" ref="logo" v-show="mult===false||mult>0.2">
         <img :src="store_msg.img_url" alt="">
       </div>
-      <div class="collection" ref="collection" v-show="mult===false||mult>0.2">
-        <i class="el-icon-star-off"></i>
+      <div class="collection" @click="collect" ref="collection" v-show="mult===false||mult>0.2">
+        <i :class="{'el-icon-star-off':!iscollect,'el-icon-star-on':iscollect}"></i>
       </div>
       <div class="store_msg" ref="store_msg">
         <h3>{{store_msg.title}}</h3>
@@ -99,6 +99,7 @@
 <script>
 import arr from "@/mock/shop";
 import { mapMutations } from "vuex";
+import { setStorage, getStorage } from "@/script/storage";
 export default {
   data() {
     return {
@@ -106,7 +107,8 @@ export default {
       activeName: "active",
       navIndex: null,
       mult: false,
-      store_msg: {}
+      store_msg: {},
+      iscollect: false
     };
   },
   methods: {
@@ -129,6 +131,13 @@ export default {
     },
     init__() {
       var id = this.$route.query.id || 1;
+      var collections = getStorage("collections");
+      if (collections) {
+        try {
+          this.iscollect = collections && collections[id];
+        } catch (err) {}
+      }
+
       for (var i = 0; i < arr.length; i++) {
         if (arr[i].id == id) {
           this.store_msg = arr[i];
@@ -136,6 +145,22 @@ export default {
           return;
         }
       }
+    },
+    collect() {
+      var collections = getStorage("collections");
+      console.log(collections)
+      if (!collections) {
+        collections = {};
+        collections[this.store_msg.id] = true;
+      } else {
+        if (collections[this.store_msg.id]) {
+          collections[this.store_msg.id] = false;
+        } else {
+          collections[this.store_msg.id] = true;
+        }
+      }
+      setStorage("collections",collections);
+      this.iscollect = collections[this.store_msg.id];
     },
     ...mapMutations(["setStore_"])
   },

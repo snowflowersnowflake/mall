@@ -121,12 +121,15 @@ export default {
             break;
           case 3:
             attr = 'start_price';
+            return a[attr] > b[attr]
             break;
           case 4:
             attr = 'average_time';
+            return a[attr] > b[attr]
             break;
           case 5:
             attr = 'transport_price';
+            return a[attr] > b[attr]
             break;
           case 6:
             attr = 'average_price';
@@ -134,8 +137,12 @@ export default {
           case 7:
             attr = (-average_price).toString;
             break;
+          case 8:
+            attr = 'distance';
+            return a[attr] > b[attr]
+            break;
         }
-        return a[attr] > b[attr];
+        return a[attr] < b[attr];
       });
       return arr || [];
     },
@@ -238,7 +245,7 @@ export default {
             border: none;
             color: #fff;
             line-height: 40 / @r;
-            background: linear-gradient(to right, #02aaff, #0286ff);
+            background: linear-gradient(to right, #02aaff, #0387ff);
           }
         }
       }

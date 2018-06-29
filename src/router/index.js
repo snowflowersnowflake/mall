@@ -12,6 +12,10 @@ import Product from '@/page/store/product/product'
 import Evaluation from '@/page/store/evaluation/evaluation'
 import Seller from '@/page/store/seller/seller'
 
+import StoreList from '@/page/store_list/store_list'
+import AddessList from '@/page/address/address_list'
+import EditAddress from '@/page/address/edit_address'
+
 Vue.use(Router)
 
 export default new Router({
@@ -75,6 +79,21 @@ export default new Router({
           component: Seller
         }
       ]
+    },
+    {
+      path:'/list',
+      name:'StoreList',
+      component: StoreList
+    },
+    {
+      path:'/addresslist',
+      name:'AddessList',
+      component: AddessList
+    },
+    {
+      path:'/editaddress',
+      name:'EditAddress',
+      component:EditAddress
     }
   ]
 })

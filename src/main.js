@@ -7,7 +7,11 @@ import '@/style/swiper.min.css';
 import App from './App'
 import router from './router'
 import store from './store'
+import BaiduMap from 'vue-baidu-map'
+import axios from 'axios'
+import VueAxios from 'vue-axios'
 
+Vue.use(VueAxios,axios);
 Vue.use(ElementUI);
 
 Vue.config.productionTip = false

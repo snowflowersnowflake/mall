@@ -5,7 +5,7 @@
         <span>{{sortTitle_}}</span>
         <i :class="{'el-icon-arrow-down':!showSort,'el-icon-arrow-up':showSort}"></i>
       </section>
-      <section @click="view_change(2)">
+      <section @click="sortByDistance">
         <span>距离最近</span>
       </section>
       <section @click="view_change(3)">
@@ -67,7 +67,8 @@ export default {
         "配送最快",
         "配送费最低",
         "人均从低到高",
-        "人均从高到低"
+        "人均从高到低",
+        "距离最近"
       ],
       filter: {
         fw: {
@@ -124,7 +125,11 @@ export default {
   methods: {
     sortBy(index) {
       this.setSort({ sortTitle: this.sortKey[index], sortIndex: index });
-      this.view_change(index);
+      this.view_change(1);
+    },
+    sortByDistance(){
+      this.setSort({ sortTitle: '距离最近', sortIndex: 8 });
+      this.view_change(2);
     },
     view_change(index) {
       this.controller_show = this.controller_show == index ? 0 : index;

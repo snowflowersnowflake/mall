@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <router-view/>
+    <router-view class="h100"/>
   </div>
 </template>
 
@@ -14,5 +14,8 @@ export default {
  @import '~@/style/reset.less';
  #app {
    height: 100%;
+   .h100 {
+     height: 100%;
+   }
  }
 </style>

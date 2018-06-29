@@ -4,30 +4,30 @@
             <!-- slides -->
             <swiper-slide>
                 <ul>
-                    <li v-for="(item,index) in teams.first" :key="index">
+                    <router-link tag="li" :to="{path:'/list',query:{title:item}}" v-for="(item,index) in teams.first" :key="index">
                         <img :src="`static/index/images/index-1-0${index+1}.png`" alt="">
                         <p>{{item}}</p>
-                    </li>
+                    </router-link>
                 </ul>
                 <ul>
-                     <li v-for="(item,index) in teams.second" :key="index">
+                     <router-link tag="li" :to="{path:'/list',query:{title:item}}" v-for="(item,index) in teams.second" :key="index">
                         <img :src="`static/index/images/index-2-0${index+1}.png`" alt="">
                         <p>{{item}}</p>
-                    </li>
+                    </router-link>
                 </ul>
             </swiper-slide>
             <swiper-slide>
                 <ul>
-                    <li v-for="(item,index) in teams.third" :key="index">
+                    <router-link tag="li" :to="{path:'/list',query:{title:item}}" v-for="(item,index) in teams.third" :key="index">
                         <img :src="`static/index/images/index-3-0${index+1}.png`" alt="">
                         <p>{{item}}</p>
-                    </li>
+                    </router-link>
                 </ul>
                 <ul>
-                     <li v-for="(item,index) in teams.fourth" :key="index">
+                     <router-link tag="li" :to="{path:'/list',query:{title:item}}" v-for="(item,index) in teams.fourth" :key="index">
                         <img :src="`static/index/images/index-4-0${index+1}.png`" alt="">
                         <p>{{item}}</p>
-                    </li>
+                    </router-link>
                 </ul>
             </swiper-slide>
             <!-- Optional controls -->

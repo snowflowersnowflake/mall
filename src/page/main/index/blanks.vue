@@ -131,6 +131,7 @@ export default {
       right: 5%;
       bottom: -14 / @r;
       position: absolute;
+      z-index: 32;
     }
   }
 }
