@@ -65,7 +65,6 @@ import blank from "./blanks";
 import advertising from "./advertising";
 import storelist from "@/components/storelist/head";
 import lisss from "@/components/storelist/store";
-import BScroll from "better-scroll";
 import storeData from "@/mock/shop";
 export default {
   data() {

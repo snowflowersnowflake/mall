@@ -10,15 +10,24 @@
             </router-link>
         </header>
         <div class="list_wrap">
+          <div class="nodata" v-show="!address.length">
+            <p class="tip">还没有收获地址</p>
+            <div class="btn_wrap">
+                <router-link tag="div" to="/editaddress" class="save">
+                新增地址
+            </router-link>
+            </div>
+          </div>
+            
             <ul>
-                <li>
+                <li v-for="(item,key) in address" :key="key">
                     <div class="text">
-                        <h3>中建三局-写字楼</h3>
-                        <h4>武珞路456号 8楼</h4>
-                        <p>许(先生) 17607198430</p>
+                        <h3>{{item.address.name}}</h3>
+                        <h4>{{item.address.address}}</h4>
+                        <p>{{getUser(item)}}</p>
                     </div>
 
-                    <router-link :to="{path:'/editaddress',query:{id:'92153026548183343'}}" class="edit">
+                    <router-link :to="{path:'/editaddress',query:{id:item.id}}" class="edit">
                         <i class="el-icon-edit-outline"></i>
                     </router-link>
                 </li>
@@ -28,7 +37,27 @@
 </template>
 
 <script>
-export default {};
+import { getStorage } from "@/script/storage";
+export default {
+  data() {
+    return {
+      address: []
+    };
+  },
+  methods: {
+    getUser(address) {
+      var { name, sex, tel } = address;
+      if (sex) {
+        return `${name}(先生) ${tel}`;
+      } else {
+        return `${name}(女士) ${tel}`;
+      }
+    }
+  },
+  mounted() {
+    this.address = getStorage("address_list");
+  }
+};
 </script>
 
 <style scoped lang="less">
@@ -62,6 +91,29 @@ export default {};
     }
   }
   .list_wrap {
+    .nodata {
+      .tip {
+        margin: 200 / @r auto 160 / @r;
+        color: #333;
+        font-size: 60 / @r;
+        text-align: center;
+      }
+      .btn_wrap {
+        padding: 0 60 / @r;
+        .save {
+          height: 144 / @r;
+          background-color: #00d762;
+          text-align: center;
+          line-height: 144 / @r;
+          border-radius: 14 / @r;
+          font-size: 46 / @r;
+          color: #fff;
+          font-weight: bold;
+          text-align: center;
+        }
+      }
+    }
+
     ul {
       padding-left: 50 / @r;
       background-color: #fff;
@@ -79,21 +131,21 @@ export default {};
           }
           h4 {
             font-size: 40 / @r;
-            padding: 20/@r 0 40/@r;
-            line-height: 50/@r;
+            padding: 20 / @r 0 40 / @r;
+            line-height: 50 / @r;
           }
           p {
-              font-size: 40/@r;
-              color: #999;
+            font-size: 40 / @r;
+            color: #999;
           }
         }
-          .edit {
-              padding: 10/@r;
-              i {
-                  font-size: 60/@r;
-                  color: #999;
-              }
+        .edit {
+          padding: 10 / @r;
+          i {
+            font-size: 60 / @r;
+            color: #999;
           }
+        }
       }
     }
   }

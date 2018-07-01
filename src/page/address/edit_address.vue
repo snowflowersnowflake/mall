@@ -5,7 +5,7 @@
                 <i class="el-icon-arrow-left"></i>
             </div>
             <h3>{{type}}</h3>
-            <div class="add">
+            <div v-show="id" class="add" @click="rmAddress">
                 <i class="el-icon-delete"></i>
             </div>
         </header>
@@ -81,12 +81,13 @@
                 </div>
             </div>
         </transition>
-
+        
     </div>
 </template>
 
 <script>
-import { setStorage, getStorage, rmStorage } from "@/script/storage";
+import { setStorage, getStorage } from "@/script/storage";
+import { mapMutations } from 'vuex'
 export default {
   data() {
     return {
@@ -144,8 +145,8 @@ export default {
     },
     generateId() {
       var id = Date.now();
-      var s = Math.ceil(Math.random() * 100);
-      var e = Math.ceil(Math.random() * 100);
+      var s = Math.floor(Math.random() * 100);
+      var e = Math.floor(Math.random() * 100);
       s = s < 10 ? "0" + s : s.toString();
       e = e < 10 ? "0" + e : e.toString();
       id = s + id + e;
@@ -176,6 +177,13 @@ export default {
         alert("资料没填完");
       }
     },
+    rmAddress(){
+      var address_list = getStorage("address_list") || {};
+      delete address_list[this.id];
+      setStorage('address_list',address_list)
+      this.openToast()
+      this.$router.replace('addresslist')
+    },
     save() {
       var id = this.id || this.generateId()
       this.setStorage(id)
@@ -194,12 +202,19 @@ export default {
           this.tel = tel;
           this.id = id;
           this.name = name
+        }else {
+          this.type = "新增地址";
         }
       } else {
         //新增地址
         this.type = "新增地址";
       }
-    }
+    },
+    openToast(){
+      this.setToast('地址删除成功')
+      this.showToast()
+    },
+    ...mapMutations(['setToast','showToast'])
   },
   mounted() {
     this.init_();
@@ -320,7 +335,7 @@ export default {
     .save {
       height: 144 / @r;
       background-color: #00d762;
-      text-emphasis: center;
+      text-align: center;
       line-height: 144 / @r;
       border-radius: 14 / @r;
       font-size: 46 / @r;
