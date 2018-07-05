@@ -1,7 +1,8 @@
 <template>
   <div class="page">
-
-    <router-view class="body"></router-view>
+    <keep-alive>
+      <router-view class="body"></router-view>
+    </keep-alive>
 
     <cus-footer class="footer"></cus-footer>
   </div>
@@ -23,6 +24,11 @@ export default {
     /* this.$nextTick(() => {
       this.scroll = new BScroll(this.$refs.scroll, {});
     }); */
+  },
+  beforeRouteLeave(to, from, next) {
+    let position = to
+    console.log(position)
+    next()
   }
 };
 </script>

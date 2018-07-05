@@ -10,8 +10,13 @@ import store from './store'
 import BaiduMap from 'vue-baidu-map'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+import VueLazyload from 'vue-lazyload'
 
-Vue.use(VueAxios,axios);
+Vue.use(VueLazyload, {
+  loading: require('@/assets/loading.svg'),
+  error:require('@/assets/error.png'),
+})
+Vue.use(VueAxios, axios);
 Vue.use(ElementUI);
 
 Vue.config.productionTip = false

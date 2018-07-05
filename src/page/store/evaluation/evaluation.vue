@@ -1,7 +1,7 @@
 <template>
   <div class="evaluation___">
     <div class="wrap_2">
-      <scroll ref="scroll" :listenScroll="true" :probeType="3" @scroll="emitScroll" :pullup="true" @scrollToEnd="pulldown_">
+      <scroll ref="scroll" :listenScroll="true" :probeType="2" @scroll="emitScroll" :pullup="true" @scrollToEnd="pulldown_">
         <div class="evaluation_read_wrap">
           <div class="overview">
             <div class="left">

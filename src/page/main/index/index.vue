@@ -1,28 +1,32 @@
 <template>
   <div class="page">
-    <header id="fake_head">
-      <div class="search_wrap" v-show="showHead">
-        <div class="search-box">
-          <i class="el-icon-search"></i>
-          <input type="text" placeholder="请输入商家、商品名称" v-model="searchKey">
+    <header id="fake_head" style="position:absolute">
+      <el-collapse-transition>
+        <div class="search_wrap" v-show="showHead">
+          <div class="search-box">
+            <i class="el-icon-search"></i>
+            <input type="text" placeholder="请输入商家、商品名称" v-model="searchKey">
+          </div>
         </div>
-      </div>
-      <storelist class="store_nav" @srollTotop="srollTotop" @openshadow="openshadow" v-show="showFakeNav" />
+      </el-collapse-transition>
+      <storelist ref="fakeNav" class="store_nav" @srollTotop="srollTotop" v-show="showFakeNav" />
     </header>
 
     <div class="scroll_wrap">
       <scroll class="scroll" :probeType="3" :listenScroll="true" @scroll="_scroll" ref="parentScroll">
 
         <div class="wrap__">
-          <div class="shadow" v-show="showShadow"></div>
+          <transition name="el-fade-in-linear">
+            <div class="shadow" @click="closeShadow" v-show="showShadow"></div>
+          </transition>
           <div ref="index_wrap" class="index_wrap">
             <header>
               <div ref="hideable" class="hideable" :style="{opacity:headOpacity}">
                 <section class="hidewrap">
-                  <section>
+                  <router-link tag="section" to="/chooseaddress">
                     <i class="el-icon-location"></i>
                     <span>{{address}}</span>
-                  </section>
+                  </router-link>
                   <section>
                     <p>抓龙虾<br>拿红包</p>
                     <img src="static/index/shrimp.png" alt="">
@@ -47,7 +51,7 @@
             <advertising />
           </div>
           <div class="storelist_wrap" ref="storelist">
-            <storelist class="store_nav" ref="storeNav" @srollTotop="srollTotop" @openshadow="openshadow" />
+            <storelist class="store_nav" ref="storeNav" @srollTotop="srollTotop" />
             <lisss class="store_list" :data="storeData" />
           </div>
 
@@ -66,10 +70,12 @@ import advertising from "./advertising";
 import storelist from "@/components/storelist/head";
 import lisss from "@/components/storelist/store";
 import storeData from "@/mock/shop";
+import { setStorage, getStorage } from "@/script/storage";
+import { mapState, mapMutations } from "vuex";
 export default {
   data() {
     return {
-      address: "",
+      address: "定位中",
       searchKey: "",
       tags: [
         "麻辣香锅",
@@ -89,7 +95,10 @@ export default {
   },
   methods: {
     _scroll(pos) {
-      this.showHead = pos.y <= -searchTop;
+      var bo = pos.y <= -searchTop;
+      if (this.showHead != bo) {
+        this.showHead = bo;
+      }
       if (pos.y < 0) {
         this.headOpacity = 1 - Math.abs(pos.y / searchTop * 1.5);
       }
@@ -99,16 +108,17 @@ export default {
         this.showFakeNav = false;
       }
     },
-    srollTotop() {
+    srollTotop(isShow) {
       if (!this.showFakeNav) {
-        setTimeout(() => {
+        if (isShow) {
           this.$refs.parentScroll.scrollTo(
             0,
             -(indexWrapHeight - searchBoxHeight),
-            500
+            200
           );
-        }, 33);
+        }
       }
+      this.openshadow(isShow);
     },
     openshadow(isShow) {
       this.showShadow = isShow;
@@ -117,6 +127,13 @@ export default {
       } else {
         this.$refs.parentScroll.enable();
       }
+    },
+    closeShadow() {
+      this.showShadow = false;
+      this.$refs.parentScroll.enable();
+      this.$refs.storeNav.controller_show = 0;
+      this.$refs.fakeNav.controller_show = 0;
+      //controller_show
     }
   },
   computed: {},
@@ -135,18 +152,30 @@ export default {
     window.storreNavHeight = this.$refs.storeNav.offsetHeight;
     window.indexWrapHeight = this.$refs.index_wrap.offsetHeight;
     window.storeNavNote = document.querySelector(".store_nav");
-    AMap.plugin("AMap.CitySearch", ()=> {
-      var citySearch = new AMap.CitySearch();
-      citySearch.getLocalCity((status, result)=> {
-        if (status === "complete" && result.info === "OK") {
-          this.address = result.city
-          // 查询成功，result即为当前所在城市信息
+    AMap.plugin("AMap.Geolocation", () => {
+      var geolocation = new AMap.Geolocation({
+        // 是否使用高精度定位，默认：true
+        enableHighAccuracy: false,
+        // 设置定位超时时间，默认：无穷大
+        timeout: 10000
+      });
+      geolocation.getCurrentPosition();
+      AMap.event.addListener(geolocation, "complete", data => {
+        this.address = data.addressComponent.building;
+        console.log(data);
+        setStorage("curLocalPos");
+      });
+      AMap.event.addListener(geolocation, "error", err => {
+        //console.error(err);
+        var data = getStorage("curLocalPos");
+        if (data) {
+          this.address = data.addressComponent.building;
         }
       });
     });
-  }
+  },
+  
 };
-
 </script>
 
 <style scoped lang='less'>
@@ -225,6 +254,7 @@ export default {
           font-size: 42 / @r;
           color: #666;
           margin-left: 16 / @r;
+          width: 12em;
         }
       }
     }

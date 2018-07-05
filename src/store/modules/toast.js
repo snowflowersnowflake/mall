@@ -5,13 +5,11 @@ export default {
     time: 2000
   },
   mutations: {
-    setToast: (state, str, time) => {
+    openToast: (state, str, time) => {
       state.toastText = str
       if (time) {
         state.time = time
       }
-    },
-    showToast: (state) => {
       state.showToast = true
     },
     hideToast: (state) => {

@@ -48,7 +48,7 @@
                 <ul>
                     <li v-for="(item,index) in brands" :key="index">
                         <div class="img_wrap">
-                            <img :src="item.imgUrl" alt="">
+                            <img v-lazy="item.imgUrl" alt="">
                         </div>
                         <h3>{{item.title}}</h3>
                         <span>{{item.tag}}</span>

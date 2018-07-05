@@ -1,93 +1,92 @@
 <template>
-    <div class="edit_address">
-        <header>
-            <div class="back" @click="$router.back(-1)">
-                <i class="el-icon-arrow-left"></i>
-            </div>
-            <h3>{{type}}</h3>
-            <div v-show="id" class="add" @click="rmAddress">
-                <i class="el-icon-delete"></i>
-            </div>
-        </header>
-        <ul class="form">
-            <li>
-                <div class="title">
-                    联系人
-                </div>
-                <div class="content">
-                    <div class="inner_wrap">
-                        <input v-model="name" type="text" placeholder="请填写姓名">
-                    </div>
-                    <div class="inner_wrap">
-                        <button type="button" class="btn" :class="{'active':sex}" @click="sex=true">先生</button>
-                        <button type="button" class="btn" :class="{'active':!sex}" @click="sex=false">女士</button>
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div class="title">
-                    电话
-                </div>
-                <div class="content">
-                    <div class="inner_wrap">
-                        <input v-model="tel" type="number" placeholder="请填写电话">
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div class="title">
-                    地址
-                </div>
-                <div class="content">
-                    <div class="address_wrap" @click="mapOn">
-                        <h3>{{address.name}}</h3>
-                        <h4>{{address.address}}</h4>
-                        <i class="el-icon-arrow-right"></i>
-                    </div>
-
-                </div>
-            </li>
-            <li>
-                <div class="title">
-                    门牌号
-                </div>
-                <div class="content">
-                    <div class="inner_wrap">
-                        <input v-model="address.detail" type="text" placeholder="请输入具体地址">
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div class="title">
-                    标签
-                </div>
-                <div class="content">
-                    <div class="inner_wrap">
-                        <button v-for="(item,index) in tagArr" :key="index" type="button" :class="{'active':item==tag}" class="btn" @click="setTag(item)">{{item}}</button>
-                    </div>
-                </div>
-            </li>
-        </ul>
-        <div class="btn_wrap">
-            <div class="save" @click="save">确&emsp;定</div>
+  <div class="edit_address">
+    <header>
+      <div class="back" @click="$router.back(-1)">
+        <i class="el-icon-arrow-left"></i>
+      </div>
+      <h3>{{type}}</h3>
+      <div v-show="id" class="add" @click="rmAddress">
+        <i class="el-icon-delete"></i>
+      </div>
+    </header>
+    <ul class="form">
+      <li>
+        <div class="title">
+          联系人
         </div>
-        <div class="map_wrap" v-if="openMap" :style="{'opacity':opacity}">
-            <iframe id="test" ref="iframe" class="flex" src="//m.amap.com/picker/?keywords=写字楼,小区,学校&zoom=15&center=&radius=1000&total=20&key=57a69eeee7b8a093920533158421d541" frameborder="0"></iframe>
+        <div class="content">
+          <div class="inner_wrap">
+            <input v-model="name" type="text" placeholder="请填写姓名">
+          </div>
+          <div class="inner_wrap">
+            <button type="button" class="btn" :class="{'active':sex}" @click="sex=true">先生</button>
+            <button type="button" class="btn" :class="{'active':!sex}" @click="sex=false">女士</button>
+          </div>
         </div>
-        <transition name="el-fade-in">
-            <div v-show="isloadding" @click="isloadding=!isloadding" class="loading">
-                <div class="wrap">
-                    <i class="el-icon-loading"></i>
-                </div>
-            </div>
-        </transition>
-        
+      </li>
+      <li>
+        <div class="title">
+          电话
+        </div>
+        <div class="content">
+          <div class="inner_wrap">
+            <input v-model="tel" type="number" placeholder="请填写电话">
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="title">
+          地址
+        </div>
+        <div class="content">
+          <div class="address_wrap" @click="mapOn">
+            <h3>{{address.name}}</h3>
+            <h4>{{address.address}}</h4>
+            <i class="el-icon-arrow-right"></i>
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="title">
+          门牌号
+        </div>
+        <div class="content">
+          <div class="inner_wrap">
+            <input v-model="address.detail" type="text" placeholder="请输入具体地址">
+          </div>
+        </div>
+      </li>
+      <li>
+        <div class="title">
+          标签
+        </div>
+        <div class="content">
+          <div class="inner_wrap">
+            <button v-for="(item,index) in tagArr" :key="index" type="button" :class="{'active':item==tag}" class="btn" @click="setTag(item)">{{item}}</button>
+          </div>
+        </div>
+      </li>
+    </ul>
+    <div class="btn_wrap">
+      <div class="save" @click="save">确&emsp;定</div>
     </div>
+    <div class="map_wrap" v-if="openMap" :style="{'opacity':opacity}">
+      <iframe id="test" ref="iframe" class="flex" src="https://m.amap.com/picker/?keywords=写字楼,小区,学校&zoom=15&center=&radius=1000&total=20&key=57a69eeee7b8a093920533158421d541" frameborder="0"></iframe>
+    </div>
+    <transition name="el-fade-in">
+      <div v-show="isloadding" @click="isloadding=!isloadding" class="loading">
+        <div class="wrap">
+          <i class="el-icon-loading"></i>
+        </div>
+      </div>
+    </transition>
+
+  </div>
 </template>
 
 <script>
 import { setStorage, getStorage } from "@/script/storage";
-import { mapMutations } from 'vuex'
+import { mapMutations } from "vuex";
 export default {
   data() {
     return {
@@ -107,7 +106,7 @@ export default {
       sex: true,
       tel: "",
       tag: "",
-      tagArr: ["家", "公司", "学校"],
+      tagArr: ["家", "公司", "学校"]
     };
   },
   methods: {
@@ -116,18 +115,27 @@ export default {
       this.isloadding = true;
       this.$nextTick(() => {
         var iframe = document.getElementById("test").contentWindow;
+        /* setTimeout(() => {
+          iframe.postMessage("hello", "https://m.amap.com/picker/");
+          this.opacity = 1;
+          this.isloadding = false;
+          
+        },500); */
         this.$refs.iframe.onload = () => {
           iframe.postMessage("hello", "https://m.amap.com/picker/");
           this.opacity = 1;
           this.isloadding = false;
+          console.log(112321)
+          
         };
-        window.addEventListener("message", this.listener, false);
+        window.addEventListener("message", e=>{this.listener(e)});
+        
       });
     },
     mapOff() {
       this.opacity = 0;
       this.openMap = false;
-      window.removeEventListener("message", this.listener);
+      //window.removeEventListener("message", this.listener);
     },
     listener(e) {
       if (e.data.name) {
@@ -170,23 +178,23 @@ export default {
         };
         var address_list = getStorage("address_list") || {};
         address_list[id] = obj;
-        console.log(typeof address_list);
         setStorage("address_list", address_list);
-        this.$router.replace('/addresslist')
+        this.openToast("地址保存成功");
+        this.$router.back();
       } else {
         alert("资料没填完");
       }
     },
-    rmAddress(){
+    rmAddress() {
       var address_list = getStorage("address_list") || {};
       delete address_list[this.id];
-      setStorage('address_list',address_list)
-      this.openToast()
-      this.$router.replace('addresslist')
+      setStorage("address_list", address_list);
+      this.openToast("地址删除成功");
+      this.$router.back();
     },
     save() {
-      var id = this.id || this.generateId()
-      this.setStorage(id)
+      var id = this.id || this.generateId();
+      this.setStorage(id);
     },
     init_() {
       if (this.$route.query.id) {
@@ -195,14 +203,14 @@ export default {
         var aid = this.$route.query.id;
         var address_list = getStorage("address_list") || {};
         if (address_list[aid]) {
-          var { id, address, sex, tag, tel,name } = address_list[aid];
+          var { id, address, sex, tag, tel, name } = address_list[aid];
           this.address = address;
           this.sex = sex;
           this.tag = tag;
           this.tel = tel;
           this.id = id;
-          this.name = name
-        }else {
+          this.name = name;
+        } else {
           this.type = "新增地址";
         }
       } else {
@@ -210,14 +218,11 @@ export default {
         this.type = "新增地址";
       }
     },
-    openToast(){
-      this.setToast('地址删除成功')
-      this.showToast()
-    },
-    ...mapMutations(['setToast','showToast'])
+    ...mapMutations(["openToast"])
   },
   mounted() {
     this.init_();
+    console.log(123);
   }
 };
 </script>

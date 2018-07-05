@@ -5,13 +5,13 @@
             <swiper-slide>
                 <ul>
                     <router-link tag="li" :to="{path:'/list',query:{title:item}}" v-for="(item,index) in teams.first" :key="index">
-                        <img :src="`static/index/images/index-1-0${index+1}.png`" alt="">
+                        <img v-lazy="`static/index/images/index-1-0${index+1}.png`" alt="">
                         <p>{{item}}</p>
                     </router-link>
                 </ul>
                 <ul>
-                     <router-link tag="li" :to="{path:'/list',query:{title:item}}" v-for="(item,index) in teams.second" :key="index">
-                        <img :src="`static/index/images/index-2-0${index+1}.png`" alt="">
+                    <router-link tag="li" :to="{path:'/list',query:{title:item}}" v-for="(item,index) in teams.second" :key="index">
+                        <img v-lazy="`static/index/images/index-2-0${index+1}.png`" alt="">
                         <p>{{item}}</p>
                     </router-link>
                 </ul>
@@ -19,13 +19,13 @@
             <swiper-slide>
                 <ul>
                     <router-link tag="li" :to="{path:'/list',query:{title:item}}" v-for="(item,index) in teams.third" :key="index">
-                        <img :src="`static/index/images/index-3-0${index+1}.png`" alt="">
+                        <img v-lazy="`static/index/images/index-3-0${index+1}.png`" alt="">
                         <p>{{item}}</p>
                     </router-link>
                 </ul>
                 <ul>
-                     <router-link tag="li" :to="{path:'/list',query:{title:item}}" v-for="(item,index) in teams.fourth" :key="index">
-                        <img :src="`static/index/images/index-4-0${index+1}.png`" alt="">
+                    <router-link tag="li" :to="{path:'/list',query:{title:item}}" v-for="(item,index) in teams.fourth" :key="index">
+                        <img v-lazy="`static/index/images/index-4-0${index+1}.png`" alt="">
                         <p>{{item}}</p>
                     </router-link>
                 </ul>
@@ -44,11 +44,11 @@ export default {
       swiperOption: {
         pagination: { el: ".swiper-pagination", clickable: false }
       },
-      teams:{
-          first:['美食','晚餐','商超便利','果蔬生鲜','新店特惠'],
-          second:['大牌简餐','会员特惠','医药健康','甜品饮品','帮买帮送'],
-          third:['浪漫鲜花','披萨意面','快餐便当','汉堡薯条','炸鸡炸串'],
-          fourth:['煲仔烧腊','火锅烤鱼','准时达','地方菜系','异国料理']
+      teams: {
+        first: ["美食", "晚餐", "商超便利", "果蔬生鲜", "新店特惠"],
+        second: ["大牌简餐", "会员特惠", "医药健康", "甜品饮品", "帮买帮送"],
+        third: ["浪漫鲜花", "披萨意面", "快餐便当", "汉堡薯条", "炸鸡炸串"],
+        fourth: ["煲仔烧腊", "火锅烤鱼", "准时达", "地方菜系", "异国料理"]
       }
     };
   },
@@ -71,24 +71,24 @@ export default {
         ul {
           display: flex;
           justify-content: space-around;
-          padding-top:56/@r;
+          padding-top: 56 / @r;
           li {
-              img {
-                  width: 133/@r;
-              }
-              p {
-                  padding-top: 35/@r;
-                  font-size: 30/@r;
-                  color: #666;
-                  text-align: center;
-              }
+            img {
+              width: 133 / @r;
+            }
+            p {
+              padding-top: 35 / @r;
+              font-size: 30 / @r;
+              color: #666;
+              text-align: center;
+            }
           }
         }
       }
     }
 
     .swiper-pagination {
-        bottom: 30/@r;
+      bottom: 30 / @r;
       span {
         width: 30 / @r;
         height: 6 / @r;

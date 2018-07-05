@@ -1,39 +1,41 @@
 <template>
-    <div class="address_list">
-        <header>
-            <div class="back" @click="$router.back(-1)">
-                <i class="el-icon-arrow-left"></i>
-            </div>
-            <h3>收货地址</h3>
-            <router-link to="/editaddress" class="add">
-                新增地址
-            </router-link>
-        </header>
-        <div class="list_wrap">
-          <div class="nodata" v-show="!address.length">
-            <p class="tip">还没有收获地址</p>
-            <div class="btn_wrap">
-                <router-link tag="div" to="/editaddress" class="save">
-                新增地址
-            </router-link>
-            </div>
-          </div>
-            
-            <ul>
-                <li v-for="(item,key) in address" :key="key">
-                    <div class="text">
-                        <h3>{{item.address.name}}</h3>
-                        <h4>{{item.address.address}}</h4>
-                        <p>{{getUser(item)}}</p>
-                    </div>
-
-                    <router-link :to="{path:'/editaddress',query:{id:item.id}}" class="edit">
-                        <i class="el-icon-edit-outline"></i>
-                    </router-link>
-                </li>
-            </ul>
+  <div class="address_list">
+    <header>
+      <div class="back" @click="$router.back(-1)">
+        <i class="el-icon-arrow-left"></i>
+      </div>
+      <h3>收货地址</h3>
+      <router-link to="/editaddress" class="add">
+        新增地址
+      </router-link>
+    </header>
+    <div class="list_wrap">
+      <div class="nodata" v-show="!Object.keys(address).length">
+        <p class="tip">还没有收获地址</p>
+        <div class="btn_wrap">
+          <router-link tag="div" to="/editaddress" class="save">
+            新增地址
+          </router-link>
         </div>
+      </div>
+
+      <ul>
+        <li v-for="(item,key) in address" :key="key">
+          <div class="text">
+            <h3>{{item.address.name}}
+              <section v-show="item.tag">{{item.tag}}</section>
+            </h3>
+            <h4>{{item.address.address}}</h4>
+            <p>{{getUser(item)}}</p>
+          </div>
+
+          <router-link :to="{path:'/editaddress',query:{id:item.id}}" class="edit">
+            <i class="el-icon-edit-outline"></i>
+          </router-link>
+        </li>
+      </ul>
     </div>
+  </div>
 </template>
 
 <script>
@@ -46,16 +48,21 @@ export default {
   },
   methods: {
     getUser(address) {
-      var { name, sex, tel } = address;
-      if (sex) {
-        return `${name}(先生) ${tel}`;
-      } else {
-        return `${name}(女士) ${tel}`;
+      if (address && address.length) {
+        var { name, sex, tel } = address;
+        if (sex) {
+          return `${name}(先生) ${tel}`;
+        } else {
+          return `${name}(女士) ${tel}`;
+        }
       }
     }
   },
   mounted() {
-    this.address = getStorage("address_list");
+    var arr = getStorage("address_list");
+    if (arr) {
+      this.address = arr;
+    }
   }
 };
 </script>
@@ -128,6 +135,16 @@ export default {
           h3 {
             font-size: 46 / @r;
             font-weight: bold;
+            section {
+              display: inline-block;
+              color: @blue;
+              font-size: 30 / @r;
+              padding: 9 / @r 12 / @r;
+              border: 1px solid @blue;
+              border-radius: 6 / @r;
+              background-color: #d6edfa;
+              margin-left: 20 / @r;
+            }
           }
           h4 {
             font-size: 40 / @r;

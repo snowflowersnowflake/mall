@@ -15,6 +15,7 @@ import Seller from '@/page/store/seller/seller'
 import StoreList from '@/page/store_list/store_list'
 import AddessList from '@/page/address/address_list'
 import EditAddress from '@/page/address/edit_address'
+import ChooseAddress from '@/page/address/choose_address'
 
 Vue.use(Router)
 
@@ -40,19 +41,24 @@ export default new Router({
       name: 'Main',
       component: Main,
       redirect: '/index',
+      meta:{index:0},
       children: [
         {
           path: 'index',
+          meta:{index:0},
           component: CusIndex,
         },
         {
           path: 'found',
+          meta:{index:0},
           component: Found,
         }, {
           path: 'bills',
+          meta:{index:0},
           component: Bills,
         }, {
           path: 'center',
+          meta:{index:0},
           component: Center,
         },
       ]
@@ -62,20 +68,24 @@ export default new Router({
       name: 'Store',
       component: Store,
       redirect: '/store/product',
+      meta:{index:2},
       children: [
         {
           path: 'product',
           name: 'product',
+          meta:{index:2},
           component: Product
         },
         {
           path: 'evaluation',
           name: 'evaluation',
+          meta:{index:2},
           component: Evaluation
         },
         {
           path: 'seller',
           name: 'seller',
+          meta:{index:2},
           component: Seller
         }
       ]
@@ -83,17 +93,26 @@ export default new Router({
     {
       path:'/list',
       name:'StoreList',
+      meta:{index:1},
       component: StoreList
     },
     {
       path:'/addresslist',
       name:'AddessList',
+      meta:{index:2},
       component: AddessList
     },
     {
       path:'/editaddress',
       name:'EditAddress',
+      meta:{index:3},
       component:EditAddress
+    },
+    {
+      path:'/chooseaddress',
+      name:'ChooseAddress',
+      meta:{index:1},
+      component:ChooseAddress
     }
   ]
 })

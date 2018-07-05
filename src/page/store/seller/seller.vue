@@ -6,7 +6,7 @@
                     <div class="seller_img">
                         <h3>商家信息</h3>
                         <div class="img_wrap">
-                            <img :src="store.img_url" alt="">
+                            <img v-lazy="store.img_url" alt="">
                         </div>
                     </div>
                     <ul class="seller_info">

@@ -14,42 +14,46 @@
       </section>
       <section @click="view_change(4)" :class="{'blue':showFilter}">
         <span class="border_left">筛选</span>
-        <div :class="{'filter':true,'active':showFilter}"></div>
+        <div :class="{'filter_':true,'active':showFilter}"></div>
       </section>
     </nav>
     <section class="shadow">
-      <ul class="sort" v-show="showSort">
-        <li v-for="(item,index) in sortKey" :key="index" @click="sortBy(index)" :class="{'blue':item==sortTitle_}">{{item}}</li>
-      </ul>
-      <div class="filter" v-show="showFilter">
-        <div class="filter_title">
-          商家服务
-          <span>(可多选)</span>
+      <el-collapse-transition>
+        <ul class="sort" v-show="showSort">
+          <li v-for="(item,index) in sortKey" :key="index" @click="sortBy(index)" :class="{'blue':item==sortTitle_}">{{item}}</li>
+        </ul>
+      </el-collapse-transition>
+      <el-collapse-transition>
+        <div class="filter" v-show="showFilter">
+          <div class="filter_title">
+            商家服务
+            <span>(可多选)</span>
+          </div>
+          <div class="block_1">
+            <ul>
+              <li v-for="(item,key) in filter.fw" :key="key" :class="{'active':filterData[key].checked}" @click="setFilterData(key)">
+                <img v-lazy="'static/filter/'+key+'.png'" alt="">
+                <span>{{item.title}}</span>
+              </li>
+            </ul>
+          </div>
+          <div class="filter_title">
+            优惠活动
+            <span>(单选)</span>
+          </div>
+          <div class="block_2">
+            <ul>
+              <li v-for="(item,index) in filter.hd.list" :key="index" :class="{'active':active==item}" @click="setFakeActive({title:item,index:index+1})">
+                <span>{{item}}</span>
+              </li>
+            </ul>
+          </div>
+          <div class="btn_group">
+            <div class="btn" @click="filterClear">清空</div>
+            <div class="btn" @click="filterEnter">查看12345个商家</div>
+          </div>
         </div>
-        <div class="block_1">
-          <ul>
-            <li v-for="(item,key) in filter.fw" :key="key" :class="{'active':filterData[key].checked}" @click="setFilterData(key)">
-              <img :src="'static/filter/'+key+'.png'" alt="">
-              <span>{{item.title}}</span>
-            </li>
-          </ul>
-        </div>
-        <div class="filter_title">
-          优惠活动
-          <span>(单选)</span>
-        </div>
-        <div class="block_2">
-          <ul>
-            <li v-for="(item,index) in filter.hd.list" :key="index" :class="{'active':active==item}" @click="setFakeActive({title:item,index:index+1})">
-              <span>{{item}}</span>
-            </li>
-          </ul>
-        </div>
-        <div class="btn_group">
-          <div class="btn" @click="filterClear">清空</div>
-          <div class="btn" @click="filterEnter">查看12345个商家</div>
-        </div>
-      </div>
+      </el-collapse-transition>
     </section>
   </div>
 </template>
@@ -127,14 +131,18 @@ export default {
       this.setSort({ sortTitle: this.sortKey[index], sortIndex: index });
       this.view_change(1);
     },
-    sortByDistance(){
-      this.setSort({ sortTitle: '距离最近', sortIndex: 8 });
+    sortByDistance() {
+      this.setSort({ sortTitle: "距离最近", sortIndex: 8 });
       this.view_change(2);
     },
     view_change(index) {
       this.controller_show = this.controller_show == index ? 0 : index;
       this.$nextTick(() => {
-        this.$emit("srollTotop");
+        if (this.controller_show == 1 || this.controller_show == 4) {
+          this.$emit("srollTotop", true);
+        } else {
+          this.$emit("srollTotop", false);
+        }
       });
     },
     filterClear() {
@@ -147,19 +155,16 @@ export default {
       this.setFakeActive();
     },
     filterEnter() {
-      this.writeRealData()
+      this.writeRealData();
       this.view_change(4);
     },
-    ...mapMutations(["setSort", "setFilter", "setFilterData", "setFakeActive","writeRealData"])
-  },
-  watch: {
-    controller_show: function(now, old) {
-      if (now == 1 || now == 4) {
-        this.$emit("openshadow", true);
-      } else {
-        this.$emit("openshadow", false);
-      }
-    }
+    ...mapMutations([
+      "setSort",
+      "setFilter",
+      "setFilterData",
+      "setFakeActive",
+      "writeRealData"
+    ])
   },
   computed: {
     showSort() {
@@ -227,7 +232,7 @@ nav {
       background: url("~@/assets/index/vip.png") center center no-repeat /
         contain;
     }
-    .filter {
+    .filter_ {
       width: 44 / @r;
       height: 40 / @r;
       background: url("~@/assets/index/filter.png") center center no-repeat /
@@ -248,6 +253,7 @@ nav {
 }
 .sort {
   background-color: #fff;
+  box-shadow: 0 20/@r 20/@r 0 rgba(0,0,0,0.3);
   li {
     line-height: 132 / @r;
     font-size: 40 / @r;
@@ -260,6 +266,7 @@ nav {
 }
 .filter {
   background-color: #fff;
+  box-shadow: 0 20/@r 20/@r 0 rgba(0,0,0,0.3);
   .filter_title {
     padding: 0 45 / @r;
     line-height: 130 / @r;

@@ -1,14 +1,14 @@
 <template>
-    <div class="advertising">
-        <swiper :options="swiperOption" ref="mySwiper">
-            <!-- slides -->
-            <swiper-slide v-for="(item,index) in banners" :key="index">
-                <img :src="item.imgUrl" alt="">
-            </swiper-slide>
-            <!-- Optional controls -->
-            <div class="swiper-pagination" slot="pagination"></div>
-        </swiper>
-    </div>
+  <div class="advertising">
+    <swiper :options="swiperOption" ref="mySwiper">
+      <!-- slides -->
+      <swiper-slide v-for="(item,index) in banners" :key="index">
+        <img :src="item.imgUrl" alt="">
+      </swiper-slide>
+      <!-- Optional controls -->
+      <div class="swiper-pagination" slot="pagination"></div>
+    </swiper>
+  </div>
 </template>
 
 <script>
@@ -18,8 +18,9 @@ export default {
     return {
       swiperOption: {
         pagination: { el: ".swiper-pagination", clickable: false },
-        autoplay:true,
-        loop:true
+        autoplay: true,
+        loop: true,
+        loopAdditionalSlides: 2
       },
       banners: [
         {
@@ -91,7 +92,7 @@ export default {
       background-color: #fff;
       border-radius: 0;
       &.swiper-pagination-bullet-active {
-        background-color: rgba(255,255,255,1);
+        background-color: rgba(255, 255, 255, 1);
       }
     }
   }

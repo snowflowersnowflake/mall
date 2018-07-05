@@ -2,7 +2,7 @@
   <div class="store_wrap" :class="{pb1000:completeData.length<4}">
     <router-link tag="div" :to="{path:'/store/product',query:{id:item.id}}" class="shop" v-for="(item,index) in completeData" :key="index">
       <div class="logo">
-        <img :src="item.img_url" alt="">
+        <img v-lazy="item.img_url" alt="">
       </div>
       <div class="shop-info">
         <div class="title-line">
@@ -34,7 +34,7 @@
           <span>{{item.tag}}</span>
         </div>
         <div class="offer">
-          <div v-show="offer_fillter(item.offer).length_>2" class="show" @click.prevent="offer_switch(index)">
+          <div v-show="offer_fillter(item.offer).length_>2" class="show" @click.prevent="offer_switch(item)">
             <i :class="{'el-icon-arrow-down':!item.show_offer,'el-icon-arrow-up':item.show_offer}"></i>
           </div>
           <ul :class="{'close':!item.show_offer}">
@@ -60,9 +60,8 @@ export default {
     }
   },
   methods: {
-    offer_switch(index) {
-      //console.log(index)
-      this.data[index].show_offer = !this.data[index].show_offer;
+    offer_switch(item) {
+      item.show_offer = !item.show_offer;
     },
     distance_format(number) {
       if (number > 1000) {

@@ -6,45 +6,60 @@
           <i></i>
         </div>
         <div class="search-box">
-          <div class="search_wrap" ref="search" v-show="mult&&mult<0.9||mult===0">
-            <i class="el-icon-search"></i>
-            <input type="text" placeholder="请输入商家、商品名称">
-          </div>
+          <!-- search hook -->
+          <transition name="el-fade-in-linear">
+            <div v-show="!down" class="search_wrap">
+              <i class="el-icon-search"></i>
+              <input type="text" placeholder="请输入商家、商品名称">
+            </div>
+          </transition>
         </div>
-        <div class="hide_el" ref="hide_el"></div>
+        <!-- hide_el hook -->
+        <el-collapse-transition>
+          <div v-show="down" class="hide_el"></div>
+        </el-collapse-transition>
       </div>
 
       <div class="shadow_img" :style="{'background-image':`url(${store_msg.img_url})`}"></div>
     </header>
     <div class="store_msg_wrap">
-      <div class="logo_wrap" ref="logo" v-show="mult===false||mult>0.2">
-        <img :src="store_msg.img_url" alt="">
-      </div>
-      <div class="collection" @click="collect" ref="collection" v-show="mult===false||mult>0.2">
-        <i :class="{'el-icon-star-off':!iscollect,'el-icon-star-on':iscollect}"></i>
-      </div>
-      <div class="store_msg" ref="store_msg">
-        <h3>{{store_msg.title}}</h3>
-        <div class="base_info">
-          <span>评价{{store_msg.score}}</span>|
-          <span>月售{{store_msg.sales}}</span>|
-          <span>蜂鸟快送约{{store_msg.average_time}}分钟</span>
+      <!-- logo hook -->
+      <transition name="scale">
+        <div v-show="down" class="logo_wrap">
+          <img :src="store_msg.img_url" alt="">
         </div>
-        <div class="unfold" :style="{'opacity':outerOpacity}" @click="showDtail=!showDtail">
-          <div class="offer_flex_wrap">
-            <ul class="offer_list">
-              <li>
-                <span :class="first_offer.class">{{first_offer.obj&&first_offer.obj.title}}</span>
-                <p>{{first_offer.obj&&first_offer.obj.text}}</p>
-              </li>
-            </ul>
-            <div class="text">{{first_offer.len}}个优惠
-              <i class="el-icon-arrow-down"></i>
-            </div>
+      </transition>
+      <!-- collection hook -->
+      <transition name="scale">
+        <div v-show="down" class="collection" @click="collect">
+          <i :class="{'el-icon-star-off':!iscollect,'el-icon-star-on':iscollect}"></i>
+        </div>
+      </transition>
+      <!-- store_msg hook -->
+      <el-collapse-transition>
+        <div v-show="down" class="store_msg">
+          <h3>{{store_msg.title}}</h3>
+          <div class="base_info">
+            <span>评价{{store_msg.score}}</span>|
+            <span>月售{{store_msg.sales}}</span>|
+            <span>蜂鸟快送约{{store_msg.average_time}}分钟</span>
           </div>
-          <p>{{store_msg.notice}}</p>
+          <div class="unfold" :style="{'opacity':outerOpacity}" @click="showDtail=!showDtail">
+            <div class="offer_flex_wrap">
+              <ul class="offer_list">
+                <li>
+                  <span :class="first_offer.class">{{first_offer.obj&&first_offer.obj.title}}</span>
+                  <p>{{first_offer.obj&&first_offer.obj.text}}</p>
+                </li>
+              </ul>
+              <div class="text">{{first_offer.len}}个优惠
+                <i class="el-icon-arrow-down"></i>
+              </div>
+            </div>
+            <p>{{store_msg.notice}}</p>
+          </div>
         </div>
-      </div>
+      </el-collapse-transition>
     </div>
     <div class="hide_able" :style="{'bottom':detailBottom,'opacity':1-outerOpacity}">
       <div class="title">优惠</div>
@@ -82,7 +97,7 @@
       <router-link class="nav_title" replace tag="div" :to="{path:'seller',query:{id:$route.query.id}}">
         <span>商家</span>
       </router-link>
-      <div class="hook" :style="{'transform':hook_translate.pos,'width':hook_translate.wid}"></div>
+      <div class="hook" :style="{'transform':nav_hook_translate.pos,'width':nav_hook_translate.wid}"></div>
     </div>
     <div class="show_content">
       <keep-alive>
@@ -106,27 +121,22 @@ export default {
       showDtail: false,
       activeName: "active",
       navIndex: null,
-      mult: false,
+      mult: 1,
       store_msg: {},
-      iscollect: false
+      iscollect: false,
+      down: true
     };
   },
   methods: {
     productScroll(pos) {
-      var y = Math.abs(pos.y);
       if (pos.y < 0) {
-        var percent = y / hide_height > 1 ? 1 : y / hide_height;
-        let mult = 1 - percent;
-        this.mult = mult;
-        this.$refs.hide_el.style.height = h1 * mult + "px";
-        this.$refs.store_msg.style.height = h2 * mult + "px";
-        this.$refs.search.style.opacity = 1 - mult;
-
-        this.$refs.logo.style.height = this.$refs.logo.style.width =
-          logoH * mult + "px";
-        this.$refs.collection.style.height = this.$refs.collection.style.width =
-          collectionH * mult + "px";
-        this.$refs.collection.style.fontSize = collectionFz * mult + "px";
+        if (this.down) {
+          this.down = false;
+        }
+      } else {
+        if (!this.donw) {
+          this.down = true;
+        }
       }
     },
     init__() {
@@ -148,7 +158,6 @@ export default {
     },
     collect() {
       var collections = getStorage("collections");
-      console.log(collections)
       if (!collections) {
         collections = {};
         collections[this.store_msg.id] = true;
@@ -159,7 +168,7 @@ export default {
           collections[this.store_msg.id] = true;
         }
       }
-      setStorage("collections",collections);
+      setStorage("collections", collections);
       this.iscollect = collections[this.store_msg.id];
     },
     ...mapMutations(["setStore_"])
@@ -171,7 +180,7 @@ export default {
     outerOpacity() {
       return this.showDtail ? 0 : 1;
     },
-    hook_translate() {
+    nav_hook_translate() {
       let el = document.querySelectorAll(".store_nav .nav_title");
       if (el[this.navIndex]) {
         let oSpan = el[this.navIndex].getElementsByTagName("span")[0];
@@ -179,11 +188,6 @@ export default {
         let wid = oSpan.offsetWidth + "px";
         return { pos: `translateX(${posLeft}px)`, wid };
       }
-
-      /* console.log(
-        el[this.navIndex] && el[this.navIndex].offsetLeft,
-        el[this.navIndex] && el[this.navIndex].innerHTML
-      ); */
       return "inherit";
     },
     first_offer() {
@@ -222,16 +226,6 @@ export default {
         this.navIndex = 0;
         break;
     }
-    window.h1 = this.$refs.hide_el.offsetHeight;
-    window.h2 = this.$refs.store_msg.clientHeight;
-    window.hide_height = h1 + h2;
-    window.logoH = this.$refs.logo.offsetHeight;
-    window.collectionH = this.$refs.collection.offsetHeight;
-    window.collectionFz = window
-      .getComputedStyle(this.$refs.collection, null)
-      .getPropertyValue("font-size");
-    window.collectionFz = parseFloat(collectionFz);
-
     this.init__();
   },
   watch: {
@@ -358,7 +352,7 @@ export default {
     }
     .search-box {
       width: 60%;
-      margin: 0 auto;
+      margin: 0 auto 20 / @r;
       height: 84 / @r;
       .search_wrap {
         height: 100%;
@@ -376,11 +370,11 @@ export default {
         font-size: 42 / @r;
         color: #666;
         margin-left: 16 / @r;
+        width: 12em;
       }
     }
     .hide_el {
       height: 140 / @r;
-      margin-top: 20 / @r;
     }
   }
   .store_msg_wrap {
@@ -392,9 +386,16 @@ export default {
       width: 228 / @r;
       height: 228 / @r;
       left: 50%;
-      top: 0;
-      transform: translate(-50%, -80%);
+      top: -160 / @r;
+      margin-left: -114 / @r;
+      transform-origin: 50% 80% 0;
       border-radius: 6 / @r;
+      transform: scale(1);
+      transition: 0.3s;
+      &.scale-enter,
+      &.scale-leave-to {
+        transform: scale(0);
+      }
       img {
         height: 100%;
         width: 100%;
@@ -410,11 +411,17 @@ export default {
       box-shadow: 0 0 10 / @r rgba(0, 0, 0, 0.4);
       background-color: #fff;
       text-align: center;
-      transform: translateY(-50%);
+      margin-top: -51 / @r;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 60 / @r;
+      transform: scale(1);
+      transition: 0.3s;
+      &.scale-enter,
+      &.scale-leave-to {
+        transform: scale(0);
+      }
       i {
         font-size: 100%;
         color: #ff4c62;

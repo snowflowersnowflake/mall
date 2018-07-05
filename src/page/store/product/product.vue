@@ -18,7 +18,7 @@
               <ul>
                 <li v-for="(product,index2) in item.products" :key="index2">
                   <div class="img_wrap">
-                    <img :src="product.imgUrl" alt="">
+                    <img v-lazy="product.imgUrl" alt="">
                     <div v-if="product.is_new" class="new">新品</div>
                     <div v-if="product.is_sign" class="sign">招牌</div>
                   </div>
