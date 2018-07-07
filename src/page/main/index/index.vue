@@ -5,7 +5,7 @@
         <div class="search_wrap" v-show="showHead">
           <div class="search-box">
             <i class="el-icon-search"></i>
-            <input type="text" placeholder="请输入商家、商品名称" v-model="searchKey">
+            <router-link class="input" tag="div" to="search">请输入商家、商品名称</router-link>
           </div>
         </div>
       </el-collapse-transition>
@@ -36,11 +36,11 @@
               <div class="search_wrap" ref="searchBox">
                 <label class="search-box">
                   <i class="el-icon-search"></i>
-                  <input type="text" placeholder="请输入商家、商品名称" v-model="searchKey">
+                  <router-link class="input" tag="div" to="search">请输入商家、商品名称</router-link>
                 </label>
               </div>
               <ul>
-                <li v-for="(item,index) in tags" :key="index">{{item}}</li>
+                <router-link tag="li" :to="{path:'/search',query:{key:item}}" v-for="(item,index) in tags" :key="index">{{item}}</router-link>
               </ul>
             </header>
             <section class="banner">
@@ -77,15 +77,7 @@ export default {
     return {
       address: "定位中",
       searchKey: "",
-      tags: [
-        "麻辣香锅",
-        "良品铺子",
-        "麦当劳",
-        "工作餐减25",
-        "虾",
-        "沙拉",
-        "一点点"
-      ],
+      tags: ["华莱士", "肉夹馍", "汤包", "港饮", "沙拉", "螺蛳粉","麦当劳"],
       showHead: false,
       headOpacity: 1,
       showShadow: false,
@@ -248,11 +240,11 @@ export default {
         justify-content: center;
         align-items: center;
         color: #9e9e9e;
-        input {
+        .input {
           background-color: transparent;
           border: none;
           font-size: 42 / @r;
-          color: #666;
+          color: #9e9e9e;
           margin-left: 16 / @r;
           width: 12em;
         }

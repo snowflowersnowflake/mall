@@ -60,14 +60,14 @@
         <div class="img_wrap">
           <img src="static/center/icon_02.png" alt="">
         </div>
-        <div class="link">
+        <router-link tag="div" to="/collection" class="link">
           <span>我的收藏</span>
           <div class="right">
             <i class="el-icon-arrow-right"></i>
           </div>
-        </div>
+        </router-link>
       </li>
-      <li>
+      <li @click="tip">
         <div class="img_wrap">
           <img src="static/center/icon_03.png" alt="">
         </div>
@@ -81,7 +81,7 @@
     </ul>
     <div class="h30"></div>
     <ul class="list">
-      <li>
+      <li @click="tip">
         <div class="img_wrap">
           <img src="static/center/icon_04.png" alt="">
         </div>
@@ -96,7 +96,7 @@
           </div>
         </div>
       </li>
-      <li>
+      <li @click="tip">
         <div class="img_wrap">
           <img src="static/center/icon_05.png" alt="">
         </div>
@@ -110,7 +110,7 @@
           </div>
         </div>
       </li>
-      <li>
+      <li @click="tip">
         <div class="img_wrap">
           <img src="static/center/icon_06.png" alt="">
         </div>
@@ -124,7 +124,7 @@
           </div>
         </div>
       </li>
-      <li>
+      <li @click="tip">
         <div class="img_wrap">
           <img src="static/center/icon_07.png" alt="">
         </div>
@@ -144,11 +144,18 @@
 </template>
 
 <script>
+import { mapMutations } from "vuex";
 export default {
   data() {
     return {
       key: "value"
     };
+  },
+  methods:{
+    tip(){
+      this.openToast("没有实现功能");
+    },
+    ...mapMutations(['openToast'])
   }
 };
 </script>

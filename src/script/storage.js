@@ -22,7 +22,7 @@ export function getStorage(k){
 }
 export function rmStorage(k){
     if(k){
-        ls.removeItem(l)
+        ls.removeItem(k)
     }
 }
 export function clearStorage(){

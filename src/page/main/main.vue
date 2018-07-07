@@ -1,9 +1,8 @@
 <template>
   <div class="page">
-    <keep-alive>
+    <transition name="fade-out">
       <router-view class="body"></router-view>
-    </keep-alive>
-
+    </transition>
     <cus-footer class="footer"></cus-footer>
   </div>
 </template>
@@ -24,31 +23,61 @@ export default {
     /* this.$nextTick(() => {
       this.scroll = new BScroll(this.$refs.scroll, {});
     }); */
-  },
-  beforeRouteLeave(to, from, next) {
-    let position = to
-    console.log(position)
-    next()
   }
 };
 </script>
 
 <style lang="less" scoped>
+@import "~@/style/base.less";
 .page {
   height: 100%;
-  display: flex;
   flex-direction: column;
   justify-content: space-between;
+  position: relative;
   .body {
-    flex-grow: 1;
-    flex-shrink: 1;
     height: 100%;
+    padding-bottom: 147/@r;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    transition: 0.5s;
   }
   .footer {
-    flex-shrink: 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+  }
+  .fade-out-enter,
+  .fade-out-leave-to {
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 147/@r;
+    width: 100%;
+    overflow: hidden;
+  }
+  .fade-out-enter-active {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 147/@r;
+    width: 100%;
+    z-index: 999;
+    overflow: hidden;
+  }
+  .fade-out-leave {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+    bottom: 147/@r;
+    z-index: 0;
+    overflow: hidden;
   }
 }
 </style>

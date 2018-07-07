@@ -7,14 +7,13 @@ import '@/style/swiper.min.css';
 import App from './App'
 import router from './router'
 import store from './store'
-import BaiduMap from 'vue-baidu-map'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import VueLazyload from 'vue-lazyload'
 
 Vue.use(VueLazyload, {
   loading: require('@/assets/loading.svg'),
-  error:require('@/assets/error.png'),
+  error: require('@/assets/error.png')
 })
 Vue.use(VueAxios, axios);
 Vue.use(ElementUI);
@@ -26,12 +25,8 @@ var hWidth = html.getBoundingClientRect().width;
 html.style.fontSize = hWidth / 18 + "px";
 
 window.onresize = function () {
-  var html = document.documentElement;
-  var hWidth = html.getBoundingClientRect().width;
-  html.style.fontSize = hWidth / 18 + "px";
+  window.location.reload()
 }
-
-// rem 69
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
@@ -39,5 +34,4 @@ new Vue({
   store,
   components: { App },
   template: '<App/>',
-
 })

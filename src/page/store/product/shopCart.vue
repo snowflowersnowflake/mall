@@ -109,7 +109,6 @@ export default {
   },
   methods: {
     ballDown(el) {
-      //console.log(el);
       for (let i = 0; i < this.balls.length; i++) {
         this.ballIndex = (this.ballIndex + 1) % this.balls.length;
         let ball = this.balls[this.ballIndex];
@@ -167,6 +166,13 @@ export default {
       if (this.foods.length) {
         this.showShadow = !this.showShadow;
       }
+    },
+    cartChange() {
+      var obj = {
+        proto: this.initialPrice,
+        total: this.totalPrice
+      }
+      this.$emit('cartChange',obj)
     }
   },
   components: {
@@ -227,7 +233,6 @@ export default {
         var price =
           Math.round((this.store_msg.start_price - this.initialPrice) * 100) /
           100;
-        console.log(price);
         return `还差￥${price}起送`;
       } else {
         return "去结算";
@@ -265,7 +270,7 @@ export default {
         return item.is_discount;
       });
       if (!has_discount) {
-        var price = this.initialPrice
+        var price = this.initialPrice;
         if (this.foods.length && this.mj) {
           var satisfy = 0;
           var minus = 0;
@@ -299,7 +304,11 @@ export default {
       }
     }
   },
-  mounted() {}
+  watch: {
+    foods:function(newVal){
+      this.cartChange()
+    }
+  }
 };
 </script>
 

@@ -51,7 +51,7 @@
       </div>
     </div>
     <div class="shopCart_wrap">
-      <cart ref="cart" :store_msg="store_msg" :foods="cartFoods"></cart>
+      <cart ref="cart" :store_msg="store_msg" :foods="cartFoods" @cartChange="saveCart"></cart>
     </div>
 
   </div>
@@ -62,6 +62,7 @@ import json from "@/mock/products";
 import scroll from "@/components/scroll";
 import cart from "./shopCart";
 import operating from "./cartOperating";
+import {getStorage,setStorage} from "@/script/storage"
 export default {
   data() {
     return {
@@ -69,7 +70,7 @@ export default {
       active_index: 0,
       scrollY: 0,
       height_arr: [],
-      shopCart: {}
+      cart: getStorage('cart')||{},
     };
   },
   methods: {
@@ -84,6 +85,16 @@ export default {
     },
     ballDown(el) {
       this.$refs.cart.ballDown(el);
+    },
+    saveCart(obj){
+
+      var id = this.$route.query.id
+      this.cart[id] = {}
+      this.cart[id].data = this.cartFoods
+      this.cart[id].proto = obj.proto
+      this.cart[id].total = obj.total
+      console.log(this.cart)
+      setStorage("cart",this.cart)
     }
   },
   computed: {

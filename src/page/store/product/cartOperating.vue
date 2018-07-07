@@ -1,18 +1,18 @@
 <template>
-    <div class="operating">
-        <transition name="in">
-            <div class="cut" @click="productMinus" v-show="food.cartCount>0">
-                <transition name="rotate">
-                    <i v-show="food.cartCount>0" class="el-icon-minus"></i>
-                </transition>
-            </div>
+  <div class="operating">
+    <transition name="in">
+      <div class="cut" @click="productMinus" v-show="food.cartCount>0">
+        <transition name="rotate">
+          <i v-show="food.cartCount>0" class="el-icon-minus"></i>
         </transition>
+      </div>
+    </transition>
 
-        <span v-show="food.cartCount>0">{{food.cartCount}}</span>
-        <div class="add" @click="productAdd($event)">
-            <i class="el-icon-plus"></i>
-        </div>
+    <span v-show="food.cartCount>0">{{food.cartCount}}</span>
+    <div class="add" @click="productAdd($event)">
+      <i class="el-icon-plus"></i>
     </div>
+  </div>
 </template>
 
 <script>
@@ -27,11 +27,13 @@ export default {
       this.food.cartCount++;
       this.$nextTick(() => {
         this.$emit("ballDown", ev.target);
+        this.$emit("cartChange");
       });
     },
     productMinus() {
       if (this.food.cartCount > 0) {
         this.food.cartCount--;
+        this.$emit("cartChange");
       }
     }
   }

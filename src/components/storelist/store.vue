@@ -1,6 +1,6 @@
 <template>
   <div class="store_wrap" :class="{pb1000:completeData.length<4}">
-    <router-link tag="div" :to="{path:'/store/product',query:{id:item.id}}" class="shop" v-for="(item,index) in completeData" :key="index">
+    <router-link v-if="refeash" tag="div" :to="{path:'/store/product',query:{id:item.id}}" class="shop" v-for="(item,index) in completeData" :key="index">
       <div class="logo">
         <img v-lazy="item.img_url" alt="">
       </div>
@@ -59,6 +59,11 @@ export default {
       default: () => []
     }
   },
+  data() {
+    return {
+      refeash: true
+    };
+  },
   methods: {
     offer_switch(item) {
       item.show_offer = !item.show_offer;
@@ -113,32 +118,32 @@ export default {
         var attr;
         switch (Number(this.sortIndex)) {
           case 1:
-            attr = 'score';
+            attr = "score";
             break;
           case 2:
-            attr = 'sales';
+            attr = "sales";
             break;
           case 3:
-            attr = 'start_price';
-            return a[attr] > b[attr]
+            attr = "start_price";
+            return a[attr] > b[attr];
             break;
           case 4:
-            attr = 'average_time';
-            return a[attr] > b[attr]
+            attr = "average_time";
+            return a[attr] > b[attr];
             break;
           case 5:
-            attr = 'transport_price';
-            return a[attr] > b[attr]
+            attr = "transport_price";
+            return a[attr] > b[attr];
             break;
           case 6:
-            attr = 'average_price';
+            attr = "average_price";
             break;
           case 7:
             attr = (-average_price).toString;
             break;
           case 8:
-            attr = 'distance';
-            return a[attr] > b[attr]
+            attr = "distance";
+            return a[attr] > b[attr];
             break;
         }
         return a[attr] < b[attr];
@@ -150,9 +155,17 @@ export default {
         return state.nav.activeRealIndex;
       },
       sortIndex: state => {
-        return state.nav.sortIndex
+        return state.nav.sortIndex;
       }
     })
+  },
+  watch: {
+    completeData: function(newVal) {
+      this.refeash = false;
+      this.$nextTick(() => {
+        this.refeash = true;
+      });
+    }
   }
 };
 </script>

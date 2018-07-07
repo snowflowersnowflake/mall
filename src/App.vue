@@ -32,9 +32,6 @@ export default {
   },
   watch: {
     $route: function(to, from) {
-      arr.filter(item => {
-        return item.index>10
-      })
       if (to.meta.index > from.meta.index) {
         this.transitionName = "slide-left";
       } else {

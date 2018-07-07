@@ -48,8 +48,9 @@ export default {
   },
   methods: {
     getUser(address) {
-      if (address && address.length) {
+      if (address && address.id) {
         var { name, sex, tel } = address;
+
         if (sex) {
           return `${name}(先生) ${tel}`;
         } else {
