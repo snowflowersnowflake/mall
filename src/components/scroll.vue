@@ -1,12 +1,21 @@
 <template>
   <div class="bs_wrap" ref="wrapper">
-    <slot></slot>
+    <div>
+      <div class="up" v-show="pullDownRefresh">
+        <i class="fa fa-long-arrow-down" :class="{'over':pullupOver>100}"></i>
+        <p>{{pullupTxt}}</p>
+      </div>
+      <slot></slot>
+      <div class="down" v-show="pullUpLoad" :style="{'transform':`translateY(${pulldownOver*0.2}px)`}">
+        <i class="el-icon-loading"></i>{{pulldownTxt}}</div>
+    </div>
+
   </div>
 </template>
 
 <script>
 import BScroll from "better-scroll";
-
+import { Indicator } from 'mint-ui';
 export default {
   props: {
     /**
@@ -49,15 +58,15 @@ export default {
     /**
      * 是否派发滚动到底部的事件，用于上拉加载
      */
-    pullup: {
-      type: Boolean,
+    pullUpLoad: {
+      type: null,
       default: false
     },
     /**
      * 是否派发顶部下拉的事件，用于下拉刷新
      */
-    pulldown: {
-      type: Boolean,
+    pullDownRefresh: {
+      type: null,
       default: false
     },
     /**
@@ -75,6 +84,14 @@ export default {
       default: 20
     }
   },
+  data(){
+    return {
+      pulldownTxt:'上拉加载更多',
+      pulldownOver:0,
+      pullupTxt:'继续下拉刷新页面',
+      pullupOver:0
+    }
+  },
   mounted() {
     // 保证在DOM渲染完毕后初始化better-scroll
     setTimeout(() => {
@@ -90,31 +107,48 @@ export default {
       this.scroll = new BScroll(this.$refs.wrapper, {
         probeType: this.probeType,
         click: this.click,
-        scrollX: this.scrollX
+        scrollX: this.scrollX,
+        pullUpLoad: this.pullUpLoad,
+        pullUpLoad: this.pullUpLoad
       });
 
       // 是否派发滚动事件
       if (this.listenScroll) {
-        this.scroll.on("scroll", pos => {
+        this.scroll.on("scroll", pos => {          
+          if (this.scroll.y < this.scroll.maxScrollY) {
+            this.pulldownOver = this.scroll.maxScrollY-this.scroll.y;
+            if(this.pulldownOver>50){
+              this.pulldownTxt = '松开手指开始加载'
+            }else {
+              this.pulldownTxt = '上拉加载更多'
+            }
+          }else if(this.scroll.y>0&&this.scroll.y<=100){
+            this.pullupOver = this.scroll.y
+            this.pullupTxt = '继续下拉刷新页面'
+          }else if(this.scroll.y>100){
+            this.pullupOver = this.scroll.y;
+            this.pullupTxt = '松开手指刷新页面';
+          }
           this.$emit("scroll", pos);
         });
       }
 
       // 是否派发滚动到底部事件，用于上拉加载
-      if (this.pullup) {
-        this.scroll.on("scrollEnd", (pos) => {
+      if (this.pullUpLoad) {
+        this.scroll.on("touchEnd", pos => {
           // 滚动到底部
-          if (this.scroll.y <= this.scroll.maxScrollY + 50) {
+          if (this.scroll.y <= this.scroll.maxScrollY - 50) {
+            Indicator.open('加载中...')
             this.$emit("scrollToEnd");
           }
         });
       }
 
       // 是否派发顶部下拉事件，用于下拉刷新
-      if (this.pulldown) {
-        this.scroll.on("touchend", pos => {
+      if (this.pullDownRefresh) {
+        this.scroll.on("touchEnd", pos => {
           // 下拉动作
-          if (pos.y > 50) {
+          if (this.scroll.y > 100) {
             this.$emit("pulldown");
           }
         });
@@ -146,6 +180,15 @@ export default {
     scrollToElement() {
       // 代理better-scroll的scrollToElement方法
       this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments);
+    },
+    finishPullDown() {
+      Indicator.close();
+      this.scroll && this.scroll.finishPullDown();
+    },
+    closePullDown(){
+      Indicator.close();
+      this.pulldownTxt = '没有更多'
+      this.scroll && this.scroll.closePullUp();
     }
   },
   watch: {
@@ -159,10 +202,43 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="less">
+@import "~@/style/base.less";
 .bs_wrap {
   height: 100%;
   position: relative;
   overflow: hidden;
+}
+.down {
+  position: absolute;
+  font-size: 40 / @r;
+  text-align: center;
+  color: @blue;
+  line-height: 120 / @r;
+  top: 100%;
+  left: 0;
+  right: 0;
+  i {
+    color: @blue;
+  }
+}
+.up {
+  position: absolute;
+  font-size: 40 / @r;
+  text-align: center;
+  color: @blue;
+  line-height: 120 / @r;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  padding-bottom: 20/@r;
+  i {
+    color: @blue;
+    font-size: 60/@r;
+    transition: 0.3s;
+    &.over {
+      transform: rotate(180deg);
+    }
+  }
 }
 </style>

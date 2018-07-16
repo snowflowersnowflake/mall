@@ -2,18 +2,18 @@ export default {
   state: {
     toastText: '',
     showToast: false,
-    time: 2000
+    time: 2000,
+    timer:null
   },
   mutations: {
     openToast: (state, str, time) => {
+      clearTimeout(state.timer)
       state.toastText = str
-      if (time) {
-        state.time = time
-      }
+      state.time = time ? time :2000
       state.showToast = true
-    },
-    hideToast: (state) => {
-      state.showToast = false
+      state.timer = setTimeout(()=>{
+        state.showToast = false
+      },state.time)
     }
   }
 }

@@ -93,7 +93,6 @@ export default {
       this.cart[id].data = this.cartFoods
       this.cart[id].proto = obj.proto
       this.cart[id].total = obj.total
-      console.log(this.cart)
       setStorage("cart",this.cart)
     }
   },

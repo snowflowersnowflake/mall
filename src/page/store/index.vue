@@ -115,6 +115,8 @@
 import arr from "@/mock/shop";
 import { mapMutations } from "vuex";
 import { setStorage, getStorage } from "@/script/storage";
+import {IndexCtrl} from "@/api/index";
+import { Toast, Indicator } from "mint-ui";
 export default {
   data() {
     return {
@@ -211,6 +213,19 @@ export default {
       return re_obj;
     }
   },
+  created(){
+    this.indexCtrl = new IndexCtrl()
+    this.indexCtrl.getStoreDetail(this.$route.query.id).then(d=>{
+      var d = d.data;
+      if(d.status==1){
+        this.store_msg = d.data
+      }else {
+        this.$router.back(-1);
+      }
+    }).catch(e=>{
+      console.log(e)
+    })
+  },
   mounted() {
     switch (this.$route.name) {
       case "product":
@@ -244,6 +259,16 @@ export default {
           this.navIndex = 0;
           break;
       }
+    }
+  },
+  beforeRouteEnter (to, from, next) {
+    if(to.query.id){
+      next()
+    }else {
+      Toast('没有传入商店id')
+      next(vm=>{
+        vm.$router.replace('/index')
+      })
     }
   }
 };

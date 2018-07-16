@@ -11,16 +11,22 @@
         </div>
       </div>
       <div class="header_bottom">
-        <div class="img_wrap">
-          <img src="static/avatar.png" alt="">
+        <div class="wrap_">
+          <div class="img_wrap">
+            <img src="static/avatar.png" alt="">
+          </div>
+          <div class="texts">
+            <p>3****5</p>
+            <section>
+              <i class="el-icon-mobile-phone"></i>
+              <span>15*******1</span>
+            </section>
+          </div>
         </div>
-        <div class="texts">
-          <p>3****5</p>
-          <section>
-            <i class="el-icon-mobile-phone"></i>
-            <span>15*******1</span>
-          </section>
+        <div class="icon_wrap" @click="logout">
+          <i class="fa fa-power-off"></i>
         </div>
+
       </div>
     </div>
     <div class="currency">
@@ -145,17 +151,22 @@
 
 <script>
 import { mapMutations } from "vuex";
+import { rmStorage } from '@/script/storage'
 export default {
   data() {
     return {
       key: "value"
     };
   },
-  methods:{
-    tip(){
+  methods: {
+    tip() {
       this.openToast("没有实现功能");
     },
-    ...mapMutations(['openToast'])
+    logout(){
+      rmStorage('token');
+      
+    },
+    ...mapMutations(["openToast"])
   }
 };
 </script>
@@ -177,39 +188,40 @@ export default {
   .header_bottom {
     display: flex;
     position: relative;
-    &:after {
-      display: block;
-      content: "";
-      position: absolute;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%) rotate(45deg);
-      width: 30 / @r;
-      height: 30 / @r;
-      border-right: 6 / @r solid #fff;
-      border-top: 6 / @r solid #fff;
-    }
-    .img_wrap {
-      height: 180 / @r;
-      width: 180 / @r;
-      border-radius: 50%;
-      margin-right: 46 / @r;
-      overflow: hidden;
-      img {
-        height: 100%;
-        width: 100%;
-      }
-    }
-    .texts {
+    justify-content: space-between;
+    align-items: center;
+    .wrap_ {
       display: flex;
-      flex-direction: column;
-      justify-content: space-around;
-      color: #fff;
-      p {
-        font-size: 60 / @r;
+      .img_wrap {
+        height: 180 / @r;
+        width: 180 / @r;
+        border-radius: 50%;
+        margin-right: 46 / @r;
+        overflow: hidden;
+        img {
+          height: 100%;
+          width: 100%;
+        }
       }
-      section {
-        font-size: 38 / @r;
+      .texts {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        color: #fff;
+        p {
+          font-size: 60 / @r;
+        }
+        section {
+          font-size: 38 / @r;
+        }
+      }
+    }
+    div.icon_wrap {
+      padding: 30 / @r;
+      padding-right: 0;
+      i {
+        font-size: 60 / @r;
+        color: #fff;
       }
     }
   }
@@ -298,14 +310,14 @@ export default {
         display: flex;
         align-items: center;
         .active {
-          height: 40/@r;
+          height: 40 / @r;
           background-color: #ff3618;
-          font-size: 24/@r;
-          color:#fff;
-          line-height: 40/@r;
-          padding:0 16/@r;
-          border-radius:20/@r;
-          margin-right: 25/@r;
+          font-size: 24 / @r;
+          color: #fff;
+          line-height: 40 / @r;
+          padding: 0 16 / @r;
+          border-radius: 20 / @r;
+          margin-right: 25 / @r;
         }
         .text {
           display: flex;

@@ -1,5 +1,5 @@
 <template>
-  <div class="page">
+  <div class="page" v-if="reload">
     <header id="fake_head" style="position:absolute">
       <el-collapse-transition>
         <div class="search_wrap" v-show="showHead">
@@ -11,10 +11,8 @@
       </el-collapse-transition>
       <storelist ref="fakeNav" class="store_nav" @srollTotop="srollTotop" v-show="showFakeNav" />
     </header>
-
     <div class="scroll_wrap">
-      <scroll class="scroll" :probeType="3" :listenScroll="true" @scroll="_scroll" ref="parentScroll">
-
+      <scroll class="scroll" @scrollToEnd="loadBottom" :pullUpLoad="true" :pullDownRefresh="true" @pulldown="loadTop" :probeType="3" :listenScroll="true" @scroll="_scroll" ref="parentScroll">
         <div class="wrap__">
           <transition name="el-fade-in-linear">
             <div class="shadow" @click="closeShadow" v-show="showShadow"></div>
@@ -44,14 +42,14 @@
               </ul>
             </header>
             <section class="banner">
-              <img src="static/index/banner.png" alt="">
+              <img v-lazy="bannerUrl" alt="">
             </section>
-            <classification />
-            <blank />
+            <classification :category="category" />
+            <blank :recommend="recommend" />
             <advertising />
           </div>
           <div class="storelist_wrap" ref="storelist">
-            <storelist class="store_nav" ref="storeNav" @srollTotop="srollTotop" />
+            <storelist class="store_nav real store_nav_hook" ref="storeNav" @srollTotop="srollTotop" />
             <lisss class="store_list" :data="storeData" />
           </div>
 
@@ -63,31 +61,43 @@
 </template>
 
 <script>
+import { Toast, Indicator } from "mint-ui";
 import scroll from "@/components/scroll";
 import classification from "./classification";
 import blank from "./blanks";
 import advertising from "./advertising";
 import storelist from "@/components/storelist/head";
 import lisss from "@/components/storelist/store";
-import storeData from "@/mock/shop";
 import { setStorage, getStorage } from "@/script/storage";
 import { mapState, mapMutations } from "vuex";
+import { IndexCtrl } from "@/api/index";
 export default {
   data() {
     return {
       address: "定位中",
       searchKey: "",
-      tags: ["华莱士", "肉夹馍", "汤包", "港饮", "沙拉", "螺蛳粉","麦当劳"],
+      tags: ["华莱士", "肉夹馍", "汤包", "港饮", "沙拉", "螺蛳粉", "麦当劳"],
       showHead: false,
       headOpacity: 1,
       showShadow: false,
       showFakeNav: false,
-      storeData
+      storeData: [],
+      appconfig: {
+        category: [],
+        banner: ""
+      },
+      bannerUrl: "",
+      category: [],
+      recommend:[],
+      page: 0,
+      posy: "",
+      reload: true
     };
   },
   methods: {
     _scroll(pos) {
       var bo = pos.y <= -searchTop;
+      this.posy = pos.y;
       if (this.showHead != bo) {
         this.showHead = bo;
       }
@@ -103,11 +113,7 @@ export default {
     srollTotop(isShow) {
       if (!this.showFakeNav) {
         if (isShow) {
-          this.$refs.parentScroll.scrollTo(
-            0,
-            -(indexWrapHeight - searchBoxHeight),
-            200
-          );
+          this.$refs.parentScroll.scrollToElement('.storelist_wrap',300,0,-searchBoxHeight)
         }
       }
       this.openshadow(isShow);
@@ -126,9 +132,113 @@ export default {
       this.$refs.storeNav.controller_show = 0;
       this.$refs.fakeNav.controller_show = 0;
       //controller_show
+    },
+    init_() {
+      Indicator.open("加载中");
+      this.storeData = [];
+      this.page = 0;
+      this.position();
+      this.indexCtrl
+        .getAppConfig()
+        .then(
+          this.$http.spread((d, l) => {
+            var d = d.data;
+            this.bannerUrl = d.data.banner.imgUrl;
+            this.category = d.data.category;
+            this.recommend = d.data.recommend
+            var d = l.data;
+            if (d.length) {
+              this.page++;
+              var arr = d.data.map(i => {
+                i.show_offer = false;
+                return i;
+              });
+              this.storeData = arr;
+            }
+            Indicator.close();
+          })
+        )
+        .catch(e => {
+          alert(e);
+          Indicator.close();
+        });
+    },
+    loadTop() {
+      window.location.reload()
+    },
+    loadBottom() {
+      this.getList();
+    },
+    getList() {
+      Indicator.open("加载中");
+      this.indexCtrl
+        .getStoreList({
+          page: this.page,
+          sortby: this.sortKey,
+          offer: this.filterKey
+        })
+        .then(d => {
+          var d = d.data;
+          if (d.length) {
+            this.page++;
+            var arr = d.data.map(i => {
+              i.show_offer = false;
+              return i;
+            });
+            this.storeData.push(...arr);
+            setTimeout(() => {
+              this.$refs.parentScroll.refresh();
+              this.$refs.parentScroll.finishPullDown();
+            }, 100);
+          } else {
+            let instance = Toast({
+              message: "没有更多数据",
+              position: "bottom",
+              duration: 2000
+            });
+            this.$refs.parentScroll.closePullDown();
+          }
+          Indicator.close();
+        })
+        .catch(e => {
+          Indicator.close();
+          console.log(e);
+        });
+    },
+    position() {
+      AMap.plugin("AMap.Geolocation", () => {
+        var geolocation = new AMap.Geolocation({
+          // 是否使用高精度定位，默认：true
+          enableHighAccuracy: false,
+          // 设置定位超时时间，默认：无穷大
+          timeout: 10000
+        });
+        geolocation.getCurrentPosition();
+        AMap.event.addListener(geolocation, "complete", data => {
+          this.address = data.addressComponent.building;
+          console.log(data);
+          setStorage("curLocalPos");
+        });
+        AMap.event.addListener(geolocation, "error", err => {
+          //console.error(err);
+          var data = getStorage("curLocalPos");
+          if (data) {
+            this.address = data.addressComponent.building;
+          }
+        });
+      });
     }
   },
-  computed: {},
+  computed: {
+    ...mapState({
+      sortKey: state => {
+        return state.nav.sortIndex;
+      },
+      filterKey: state => {
+        return state.nav.activeRealIndex;
+      }
+    })
+  },
   components: {
     classification,
     blank,
@@ -141,32 +251,25 @@ export default {
     window.searchTop = this.$refs.hideable.clientHeight;
     window.indexWrapHeight = this.$refs.index_wrap.offsetHeight;
     window.searchBoxHeight = this.$refs.searchBox.offsetHeight;
-    window.storreNavHeight = this.$refs.storeNav.offsetHeight;
-    window.indexWrapHeight = this.$refs.index_wrap.offsetHeight;
-    window.storeNavNote = document.querySelector(".store_nav");
-    AMap.plugin("AMap.Geolocation", () => {
-      var geolocation = new AMap.Geolocation({
-        // 是否使用高精度定位，默认：true
-        enableHighAccuracy: false,
-        // 设置定位超时时间，默认：无穷大
-        timeout: 10000
-      });
-      geolocation.getCurrentPosition();
-      AMap.event.addListener(geolocation, "complete", data => {
-        this.address = data.addressComponent.building;
-        console.log(data);
-        setStorage("curLocalPos");
-      });
-      AMap.event.addListener(geolocation, "error", err => {
-        //console.error(err);
-        var data = getStorage("curLocalPos");
-        if (data) {
-          this.address = data.addressComponent.building;
-        }
-      });
-    });
   },
-  
+  created() {
+    this.indexCtrl = new IndexCtrl();
+    this.init_();
+  },
+  watch: {
+    sortKey: function(newVal) {
+      this.storeData = [];
+      this.page = 0;
+      this.getList();
+      this.$refs.parentScroll.scrollToElement('.storelist_wrap',300,0,-searchBoxHeight)
+    },
+    filterKey: function(newVal) {
+      this.storeData = [];
+      this.page = 0;
+      this.getList();
+      this.$refs.parentScroll.scrollToElement('.storelist_wrap',300,0,-searchBoxHeight)
+    }
+  }
 };
 </script>
 
@@ -270,10 +373,12 @@ export default {
     }
   }
   .scroll_wrap {
-    flex-shrink: 1;
-    flex-grow: 1;
     overflow: hidden;
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 147 / @r;
+    right: 0;
   }
   .scroll {
     position: absolute;
@@ -290,6 +395,9 @@ export default {
       background-color: rgba(0, 0, 0, 0.3);
       z-index: 90;
     }
+  }
+  .real {
+    z-index:110;
   }
 }
 </style>

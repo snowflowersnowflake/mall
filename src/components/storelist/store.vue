@@ -1,6 +1,6 @@
 <template>
   <div class="store_wrap" :class="{pb1000:completeData.length<4}">
-    <router-link v-if="refeash" tag="div" :to="{path:'/store/product',query:{id:item.id}}" class="shop" v-for="(item,index) in completeData" :key="index">
+    <router-link v-if="refeash" tag="div" :to="{path:'/store/product',query:{id:item._id}}" class="shop" v-for="(item,index) in dd" :key="index">
       <div class="logo">
         <img v-lazy="item.img_url" alt="">
       </div>
@@ -47,6 +47,7 @@
 
       </div>
     </router-link>
+    
   </div>
 </template>
 
@@ -61,7 +62,8 @@ export default {
   },
   data() {
     return {
-      refeash: true
+      refeash: true,
+      dd:[]
     };
   },
   methods: {
@@ -92,7 +94,8 @@ export default {
   computed: {
     completeData() {
       //先筛选
-      var arr = this.data.filter(item => {
+      
+      var arr = this.data.filter((item,i) => {
         switch (Number(this.activeRealIndex)) {
           case 1:
             return item.offer.sd;
@@ -113,7 +116,7 @@ export default {
 
       //再排序
       //return this.data;
-
+      if(this.sortIndex){
       arr.sort((a, b) => {
         var attr;
         switch (Number(this.sortIndex)) {
@@ -145,9 +148,12 @@ export default {
             attr = "distance";
             return a[attr] > b[attr];
             break;
+          default:
+            return false
         }
         return a[attr] < b[attr];
       });
+      }
       return arr || [];
     },
     ...mapState({
@@ -160,11 +166,8 @@ export default {
     })
   },
   watch: {
-    completeData: function(newVal) {
-      this.refeash = false;
-      this.$nextTick(() => {
-        this.refeash = true;
-      });
+    data: function(newVal) {
+      this.dd = newVal
     }
   }
 };
@@ -177,6 +180,7 @@ export default {
 }
 .store_wrap {
   padding: 0 30 / @r;
+  position: relative;
 }
 .shop {
   display: flex;
@@ -353,4 +357,5 @@ export default {
     }
   }
 }
+
 </style>

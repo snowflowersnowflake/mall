@@ -1,36 +1,36 @@
 <template>
     <div>
         <ul class="h1">
-            <li>
+            <router-link to="list?title=限量抢购" tag="li">
                 <h3>限量抢购</h3>
                 <p>丰盛晚餐9.9元起</p>
                 <section>
                     <span>2757人</span>正在抢></section>
                 <img src="static/index/blank-1.png" alt="">
-            </li>
-            <li>
+            </router-link>
+            <router-link to="list?title=果蔬生鲜" tag="li">
                 <h3>周4水果日</h3>
                 <p>大牌满立减20元</p>
                 <section>新鲜抢购></section>
                 <img src="static/index/blank-2.png" alt="">
-            </li>
+            </router-link>
         </ul>
         <ul class="h2">
-            <li>
+            <router-link to="list?title=大牌夜市" tag="li">
                 <h4>大牌夜市</h4>
                 <section>不止立减30</section>
                 <img src="static/index/blank-2-1.png" alt="">
-            </li>
-            <li>
+            </router-link>
+            <router-link to="list?title=品质联盟" tag="li">
                 <h4>品质联盟</h4>
                 <section>品质升级 消费亲民</section>
                 <img src="static/index/blank-2-2.png" alt="">
-            </li>
-            <li>
+            </router-link>
+            <router-link to="list?title=猜你喜欢" tag="li">
                 <h4>猜你喜欢</h4>
                 <section>沙拉</section>
                 <img src="static/index/blank-2-3.png" alt="">
-            </li>
+            </router-link>
         </ul>
         <section class="h3">
             <img src="static/index/blank-3.png" alt="">
@@ -42,17 +42,17 @@
                     品质优选
                     <section class="right"></section>
                 </div>
-                <div class="more">更多 ></div>
+                <router-link to="list?title=品质优选" class="more">更多 ></router-link>
             </div>
             <div class="body">
                 <ul>
-                    <li v-for="(item,index) in brands" :key="index">
+                    <router-link tag="li" :to="{path:'/store/product',query:{id:item._id}}" v-for="(item,index) in recommend" :key="index">
                         <div class="img_wrap">
-                            <img v-lazy="item.imgUrl" alt="">
+                            <img v-lazy="item.img_url" alt="">
                         </div>
                         <h3>{{item.title}}</h3>
-                        <span>{{item.tag}}</span>
-                    </li>
+                        <span>大牌精选</span>
+                    </router-link>
                 </ul>
 
             </div>
@@ -62,6 +62,12 @@
 
 <script>
 export default {
+  props:{
+    recommend:{
+      type:Array,
+      default:[]
+    }
+  },
   data() {
     return {
       brands: [
@@ -232,6 +238,7 @@ export default {
   }
   .body {
       padding: 50/@r 0;
+      height: 400/@r;
       ul {
           display: flex;
           justify-content: space-around;

@@ -20,6 +20,8 @@ const ChooseAddress = r => require.ensure([], () => r(require('@/page/address/ch
 const Search = r => require.ensure([], () => r(require('@/page/search/search'), 'Search'))
 const Collection = r => require.ensure([], () => r(require('@/page/main/center/collection'), 'collection'))
 
+const Login = r => require.ensure([], () => r(require('@/page/login/login'), 'login'))
+const Reg = r => require.ensure([], () => r(require('@/page/login/reg'), 'login'))
 Vue.use(Router)
 
 export default new Router({
@@ -134,6 +136,18 @@ export default new Router({
       name: "Checkout",
       component: Checkout,
       meta: { index: 10 }
+    },
+    {
+      path: '/login',
+      name: "login",
+      component: Login,
+      meta: { index: 10 }
+    },
+    {
+      path: '/reg',
+      name: "reg",
+      component: Reg,
+      meta: { index: 20 }
     }
   ]
 })

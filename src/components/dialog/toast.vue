@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex'
+import { mapState } from 'vuex'
 export default {
   data() {
     return {};
@@ -28,18 +28,6 @@ export default {
       }
     })
   },
-  methods: {
-    ...mapMutations(['hideToast'])
-  },
-  mounted() {
-    if (this.toastText) {
-      setTimeout(() => {
-        this.hideToast()
-      }, this.time);
-    } else {
-      console.error('toastText没有值')
-    }
-  }
 };
 </script>
 <style lang='less' scoped>
