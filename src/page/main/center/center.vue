@@ -152,6 +152,7 @@
 <script>
 import { mapMutations } from "vuex";
 import { rmStorage } from '@/script/storage'
+import { Toast } from "mint-ui"
 export default {
   data() {
     return {
@@ -160,11 +161,14 @@ export default {
   },
   methods: {
     tip() {
-      this.openToast("没有实现功能");
+      Toast({
+        message: "没有实现功能",
+        position: "bottom"
+      })
     },
     logout(){
       rmStorage('token');
-      
+      this.$router.push('/login')
     },
     ...mapMutations(["openToast"])
   }

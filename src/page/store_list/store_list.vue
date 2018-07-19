@@ -11,7 +11,7 @@
     </header>
     <store-head ref="storeHead" class="head" @srollTotop="ctrlShadow"></store-head>
     <div class="scroll_wrap">
-      <scroll :listenScroll="true" :probeType="3" :pullUpLoad="true" @scrollToEnd="getList" ref="scroll" class="scroll">
+      <scroll :listenScroll="true" :probeType="3" :pullUpLoad="true" :pullDownRefresh="true" @pulldown="init_" @scrollToEnd="getList" ref="scroll" class="scroll">
         <list :data="storeData"></list>
       </scroll>
     </div>
@@ -96,11 +96,16 @@ export default {
       this.showShadow = false;
       this.$refs.scroll.enable();
       this.$refs.storeHead.controller_show = 0;
+    },
+    init_() {
+      this.indexCtrl = new IndexCtrl();
+      this.page = 0;
+      this.storeData = []
+      this.getList();
     }
   },
   created() {
-    this.indexCtrl = new IndexCtrl();
-    this.getList();
+    this.init_();
   },
   watch: {
     sortKey: function(newVal) {

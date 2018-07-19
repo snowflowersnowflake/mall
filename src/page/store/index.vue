@@ -8,10 +8,10 @@
         <div class="search-box">
           <!-- search hook -->
           <transition name="el-fade-in-linear">
-            <div v-show="!down" class="search_wrap">
+            <router-link tag="div" to="/search" v-show="!down" class="search_wrap">
               <i class="el-icon-search"></i>
-              <input type="text" placeholder="请输入商家、商品名称">
-            </div>
+              <input disabled type="text" placeholder="请输入商家、商品名称">
+            </router-link>
           </transition>
         </div>
         <!-- hide_el hook -->
@@ -26,13 +26,15 @@
       <!-- logo hook -->
       <transition name="scale">
         <div v-show="down" class="logo_wrap">
-          <img :src="store_msg.img_url" alt="">
+          <img v-lazy="store_msg.img_url" alt="">
         </div>
       </transition>
       <!-- collection hook -->
       <transition name="scale">
-        <div v-show="down" class="collection" @click="collect">
-          <i :class="{'el-icon-star-off':!iscollect,'el-icon-star-on':iscollect}"></i>
+        <div class="collection_wrap" v-show="down" @click="collect">
+          <div class="collection">
+            <i :class="{'el-icon-star-off':!iscollect,'el-icon-star-on':iscollect}"></i>
+          </div>
         </div>
       </transition>
       <!-- store_msg hook -->
@@ -64,7 +66,7 @@
     <div class="hide_able" :style="{'bottom':detailBottom,'opacity':1-outerOpacity}">
       <div class="title">优惠</div>
       <ul class="offer_list">
-        <li v-for="(item,key) in store_msg.offer" :key="key">
+        <li v-if="item.status" v-for="(item,key) in store_msg.offer" :key="key">
           <span :class="key">{{item.title}}</span>
           <p>{{item.text}}</p>
         </li>
@@ -73,11 +75,11 @@
       <ul class="offer_list">
         <li>
           <span>拒单赔</span>
-          <p>满25减12，满40减18，满65减25</p>
+          <p>商家拒绝接单赔付3元</p>
         </li>
         <li>
           <span>开发票</span>
-          <p>满25减12，满40减18，满65减25</p>
+          <p>超过40元可以开发票</p>
         </li>
       </ul>
       <div class="title">公告</div>
@@ -115,7 +117,8 @@
 import arr from "@/mock/shop";
 import { mapMutations } from "vuex";
 import { setStorage, getStorage } from "@/script/storage";
-import {IndexCtrl} from "@/api/index";
+import { IndexCtrl } from "@/api/index";
+import { StoreCtrl } from "@/api/store";
 import { Toast, Indicator } from "mint-ui";
 export default {
   data() {
@@ -143,35 +146,48 @@ export default {
     },
     init__() {
       var id = this.$route.query.id || 1;
-      var collections = getStorage("collections");
-      if (collections) {
-        try {
-          this.iscollect = collections && collections[id];
-        } catch (err) {}
-      }
-
-      for (var i = 0; i < arr.length; i++) {
-        if (arr[i].id == id) {
-          this.store_msg = arr[i];
-          this.setStore_(this.store_msg);
-          return;
-        }
-      }
+      Indicator.open('加载中...')
+      this.$http
+        .all([
+          this.indexCtrl.getStoreDetail(id),
+          this.storeCtrl.getCollections()
+        ])
+        .then(
+          this.$http.spread((d, collection) => {
+            var d = d.data;
+            if (d.status == 1) {
+              this.store_msg = d.data;
+              this.setStore_(this.store_msg);
+            } else {
+              this.$router.back(-1);
+            }
+            var collection = collection.data;
+            if(collection.status==1){
+              collection.data.forEach(item=>{
+                if(item._id==id){
+                  this.iscollect = true
+                }
+              })
+            }
+            //this.iscollect = collection.data[this.store_msg._id];
+            Indicator.close()
+          })
+        )
+        .catch(e => {
+          Indicator.close()
+          console.log(e);
+        });
     },
     collect() {
-      var collections = getStorage("collections");
-      if (!collections) {
-        collections = {};
-        collections[this.store_msg.id] = true;
-      } else {
-        if (collections[this.store_msg.id]) {
-          collections[this.store_msg.id] = false;
-        } else {
-          collections[this.store_msg.id] = true;
-        }
-      }
-      setStorage("collections", collections);
-      this.iscollect = collections[this.store_msg.id];
+      this.storeCtrl
+        .editCollections({ store_id: this.store_msg._id })
+        .then(d => {
+          var d = d.data;
+          this.iscollect = d.data[this.store_msg._id];
+        })
+        .catch(e => {
+          console.log(e);
+        });
     },
     ...mapMutations(["setStore_"])
   },
@@ -213,18 +229,9 @@ export default {
       return re_obj;
     }
   },
-  created(){
-    this.indexCtrl = new IndexCtrl()
-    this.indexCtrl.getStoreDetail(this.$route.query.id).then(d=>{
-      var d = d.data;
-      if(d.status==1){
-        this.store_msg = d.data
-      }else {
-        this.$router.back(-1);
-      }
-    }).catch(e=>{
-      console.log(e)
-    })
+  created() {
+    this.indexCtrl = new IndexCtrl();
+    this.storeCtrl = new StoreCtrl();
   },
   mounted() {
     switch (this.$route.name) {
@@ -261,14 +268,18 @@ export default {
       }
     }
   },
-  beforeRouteEnter (to, from, next) {
-    if(to.query.id){
-      next()
-    }else {
-      Toast('没有传入商店id')
-      next(vm=>{
-        vm.$router.replace('/index')
-      })
+  beforeRouteEnter(to, from, next) {
+    if (to.query.id) {
+      next();
+    } else {
+      Toast({
+        message: "没有传入商店id",
+        position: "bottom",
+        duration: 2000
+      });
+      next(vm => {
+        vm.$router.replace("/index");
+      });
     }
   }
 };
@@ -295,7 +306,7 @@ export default {
       overflow: hidden;
       margin-bottom: 25 / @r;
       span {
-        //width: 72 / @r;
+        width: 72 / @r;
         padding: 0 6 / @r;
         text-align: center;
         height: 40 / @r;
@@ -342,6 +353,7 @@ export default {
     padding-top: 84 / @r;
     position: relative;
     overflow: hidden;
+    z-index: 10;
     .header_wrap {
       position: relative;
       height: 100%;
@@ -426,32 +438,37 @@ export default {
         width: 100%;
       }
     }
-    .collection {
-      width: 102 / @r;
-      height: 102 / @r;
-      border-radius: 50%;
+    .collection_wrap {
+      width: 142 / @r;
+      height: 142 / @r;
+      padding: 20 / @r;
       position: absolute;
-      top: 0;
-      right: 50 / @r;
-      box-shadow: 0 0 10 / @r rgba(0, 0, 0, 0.4);
-      background-color: #fff;
-      text-align: center;
-      margin-top: -51 / @r;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 60 / @r;
+      top: -71 / @r;
+      right: 30 / @r;
       transform: scale(1);
       transition: 0.3s;
+      .collection {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        box-shadow: 0 0 10 / @r rgba(0, 0, 0, 0.4);
+        background-color: #fff;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 60 / @r;
+        i {
+          font-size: 100%;
+          color: #ff4c62;
+        }
+      }
       &.scale-enter,
       &.scale-leave-to {
         transform: scale(0);
       }
-      i {
-        font-size: 100%;
-        color: #ff4c62;
-      }
     }
+
     .store_msg {
       height: 440 / @r;
       overflow: hidden;

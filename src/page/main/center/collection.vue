@@ -1,59 +1,61 @@
 <template>
-    <div class="collection_page">
-        <header>
-            <div class="back" @click="$router.back(-1)">
-                <i class="el-icon-arrow-left"></i>
-            </div>
-            <h3>我的收藏</h3>
-        </header>
-        <div class="content_wrap">
-            <div class="nodata"><i class="el-icon-warning"></i>没有收藏</div>
-            <div class="scroll_wrap">
-                <scroll>
-                    <ul>
-                        <router-link v-if="Object.keys(col).length" tag="li" :to="{path:'/store/product',query:{id:item.id}}" class="shop" v-for="(item,key) in col" :key="key">
-                            <div class="logo">
-                                <img v-lazy="item.img_url" alt="">
-                            </div>
-                            <div class="shop-info">
-                                <div class="title-line">
-                                    <h3>{{item.title}}</h3>
-                                </div>
-                                <div class="score-line">
-                                    <div class="score">
-                                        <el-rate v-model="item.score" disabled show-score text-color="#ff9900z" score-template="{value}">
-                                        </el-rate>
-                                        <span class="sale">月售{{item.sales}}</span>
-                                    </div>
-                                </div>
-                                <div class="price-line">
-                                    <span>
-                                        <em>起送￥{{item.start_price}}</em> |
-                                        <em>配送 ￥{{item.transport_price}}</em>
-                                    </span>
-                                    <span>
-                                        <em>{{item.average_time}}分钟</em> |
-                                        <em>{{distance_format(item.distance)}}</em>
-                                    </span>
-                                </div>
-                            </div>
-                        </router-link>
-                    </ul>
-                </scroll>
-            </div>
-        </div>
+  <div class="collection_page">
+    <header>
+      <div class="back" @click="$router.back(-1)">
+        <i class="el-icon-arrow-left"></i>
+      </div>
+      <h3>我的收藏</h3>
+    </header>
+    <div class="content_wrap">
+      <div class="nodata" v-if="!colData.length">
+        <i class="el-icon-warning"></i>没有收藏</div>
+      <div class="scroll_wrap" v-else>
+        <scroll>
+          <ul>
+            <router-link tag="li" :to="{path:'/store/product',query:{id:item._id}}" class="shop" v-for="(item,index) in colData" :key="index">
+              <div class="logo">
+                <img v-lazy="item.img_url" alt="">
+              </div>
+              <div class="shop-info">
+                <div class="title-line">
+                  <h3>{{item.title}}</h3>
+                </div>
+                <div class="score-line">
+                  <div class="score">
+                    <el-rate v-model="item.score" disabled show-score text-color="#ff9900z" score-template="{value}">
+                    </el-rate>
+                    <span class="sale">月售{{item.sales}}</span>
+                  </div>
+                </div>
+                <div class="price-line">
+                  <span>
+                    <em>起送￥{{item.start_price}}</em> |
+                    <em>配送 ￥{{item.transport_price}}</em>
+                  </span>
+                  <span>
+                    <em>{{item.average_time}}分钟</em> |
+                    <em>{{distance_format(item.distance)}}</em>
+                  </span>
+                </div>
+              </div>
+            </router-link>
+          </ul>
+        </scroll>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
 import { getStorage } from "@/script/storage";
 import scroll from "@/components/scroll";
-import storeData from "@/mock/shop";
+import { Indicator } from "mint-ui";
+import { StoreCtrl } from "@/api/store";
+import { Store } from "vuex";
 export default {
   data() {
     return {
-      storeData,
-      colData: getStorage("collections") || {}
+      colData:[]
     };
   },
   methods: {
@@ -63,27 +65,30 @@ export default {
       } else {
         return number + "m";
       }
+    },
+    init_() {
+      this.ctrl
+        .getCollections()
+        .then(d => {
+          console.log(d)
+          var d= d.data;
+          if(d.status==1){
+            this.colData = d.data
+          }
+        })
+        .catch(e => {
+          console.log(e);
+        });
     }
   },
   components: {
     scroll
   },
-  computed: {
-    col() {
-      var o = Object.assign({}, this.colData);
-      var obj = {};
-      this.storeData.forEach(e => {
-        obj[e.id] = e;
-      });
-      for (let attr in o) {
-        if (o[attr]) {
-          o[attr] = obj[attr];
-        } else {
-          delete o[attr];
-        }
-      }
-      return o;
-    }
+  created() {
+    this.ctrl = new StoreCtrl();
+  },
+  mounted(){
+    this.init_()
   }
 };
 </script>
@@ -122,10 +127,10 @@ export default {
     flex: auto;
     position: relative;
     .nodata {
-        text-align: center;
-        padding-top: 200/@r;
-        font-size: 60/@r;
-        color: @blue;
+      text-align: center;
+      padding-top: 200 / @r;
+      font-size: 60 / @r;
+      color: @blue;
     }
     .scroll_wrap {
       position: absolute;

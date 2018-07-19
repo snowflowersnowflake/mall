@@ -4,7 +4,7 @@
       <div class="list_left">
         <scroll class="scroll">
           <ul>
-            <li :class="{'active':clacIndex==index}" v-for="(item,index) in data" :key="index" @click="scrollToClass(index)">{{item.title}}</li>
+            <li :class="{'active':calcIndex==index}" v-for="(item,index) in data" :key="index" @click="scrollToClass(index)">{{item.title}}</li>
           </ul>
         </scroll>
       </div>
@@ -58,11 +58,13 @@
 </template>
 
 <script>
-import json from "@/mock/products";
 import scroll from "@/components/scroll";
 import cart from "./shopCart";
 import operating from "./cartOperating";
-import {getStorage,setStorage} from "@/script/storage"
+import { getStorage, setStorage } from "@/script/storage";
+import { CartCtrl } from "@/api/store/cart";
+import { mapState } from "vuex";
+import { Toast, Indicator } from "mint-ui";
 export default {
   data() {
     return {
@@ -70,7 +72,8 @@ export default {
       active_index: 0,
       scrollY: 0,
       height_arr: [],
-      cart: getStorage('cart')||{},
+      cart: getStorage("cart") || {},
+      ctrl: null
     };
   },
   methods: {
@@ -86,18 +89,73 @@ export default {
     ballDown(el) {
       this.$refs.cart.ballDown(el);
     },
-    saveCart(obj){
-
-      var id = this.$route.query.id
-      this.cart[id] = {}
-      this.cart[id].data = this.cartFoods
-      this.cart[id].proto = obj.proto
-      this.cart[id].total = obj.total
-      setStorage("cart",this.cart)
+    saveCart(obj) {
+      var id = this.$route.query.id;
+      this.cart[id] = {};
+      this.cart[id].data = this.cartFoods;
+      this.cart[id].proto = obj.proto;
+      this.cart[id].total = obj.total;
+      setStorage("cart", this.cart);
+    },
+    init_() {
+      Indicator.open("加载中...");
+      this.ctrl
+        .getGoodsAndCart()
+        .then(
+          this.$http.spread((d, cart) => {
+            var d = d.data;
+            var cart = cart.data;
+            if (d.status == 1 && cart.status == 1) {
+              this.data = d.data.map(item => {
+                item.products.forEach(item2 => {
+                  if (
+                    Boolean(
+                      cart.data[this.$route.query.id] &&
+                        cart.data[this.$route.query.id][item2.category] &&
+                        cart.data[this.$route.query.id][item2.category][
+                          item2.product_id
+                        ]
+                    )
+                  ) {
+                    item2.cartCount =
+                      cart.data[this.$route.query.id][item2.category][
+                        item2.product_id
+                      ] || 0;
+                  } else {
+                    item2.cartCount = 0;
+                  }
+                });
+                return item;
+              });
+            } else if (d.status == 1) {
+              this.data = d.data.map(item => {
+                item.products.forEach(item2 => {
+                  item2.cartCount = 0;
+                });
+                return item;
+              });
+            }
+            this.$nextTick(() => {
+              var Ali = this.$refs.productList.querySelectorAll(".height_hook");
+              var h = 0;
+              this.height_arr.push(h);
+              for (let i = 0; i < Ali.length; i++) {
+                h += Ali[i].offsetHeight;
+                this.height_arr.push(h);
+              }
+            });
+            //alert(JSON.stringify(cart))
+            Indicator.close();
+          })
+        )
+        .catch(e => {
+          Indicator.close();
+          alert(e);
+        });
     }
   },
   computed: {
-    clacIndex() {
+    calcIndex() {
       var arr = this.height_arr,
         scrollY = this.scrollY;
 
@@ -119,32 +177,32 @@ export default {
       return foods;
     },
     store_msg() {
-      return this.$store.state.store.store_
-    }
+      return this.$store.state.store.store_;
+    },
+    ...mapState({
+      store_: state => {
+        return state.store.store_;
+      }
+    })
+  },
+  created() {
+    this.ctrl = new CartCtrl();
+    this.init_();
   },
   mounted() {
-    this.data = json.products_class.map(item => {
+    /* this.data = json.products_class.map(item => {
       item.products.forEach(item2 => {
         item2.cartCount = 0;
       });
       return item;
     });
-
-    this.$nextTick(() => {
-      var Ali = this.$refs.productList.querySelectorAll('.height_hook');
-      var h = 0;
-      this.height_arr.push(h);
-      for (let i = 0; i < Ali.length; i++) {
-        h += Ali[i].offsetHeight;
-        this.height_arr.push(h);
-      }
-    });
+ */
   },
   components: {
     scroll,
     cart,
     operating
-  },
+  }
 };
 </script>
 

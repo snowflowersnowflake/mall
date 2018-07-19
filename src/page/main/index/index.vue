@@ -1,5 +1,5 @@
 <template>
-  <div class="page" v-if="reload">
+  <div class="page">
     <header id="fake_head" style="position:absolute">
       <el-collapse-transition>
         <div class="search_wrap" v-show="showHead">
@@ -88,10 +88,9 @@ export default {
       },
       bannerUrl: "",
       category: [],
-      recommend:[],
+      recommend: [],
       page: 0,
-      posy: "",
-      reload: true
+      posy: ""
     };
   },
   methods: {
@@ -113,7 +112,12 @@ export default {
     srollTotop(isShow) {
       if (!this.showFakeNav) {
         if (isShow) {
-          this.$refs.parentScroll.scrollToElement('.storelist_wrap',300,0,-searchBoxHeight)
+          this.$refs.parentScroll.scrollToElement(
+            ".storelist_wrap",
+            300,
+            0,
+            -searchBoxHeight
+          );
         }
       }
       this.openshadow(isShow);
@@ -145,7 +149,7 @@ export default {
             var d = d.data;
             this.bannerUrl = d.data.banner.imgUrl;
             this.category = d.data.category;
-            this.recommend = d.data.recommend
+            this.recommend = d.data.recommend;
             var d = l.data;
             if (d.length) {
               this.page++;
@@ -164,7 +168,7 @@ export default {
         });
     },
     loadTop() {
-      window.location.reload()
+      window.location.reload();
     },
     loadBottom() {
       this.getList();
@@ -206,27 +210,37 @@ export default {
         });
     },
     position() {
-      AMap.plugin("AMap.Geolocation", () => {
-        var geolocation = new AMap.Geolocation({
-          // 是否使用高精度定位，默认：true
-          enableHighAccuracy: false,
-          // 设置定位超时时间，默认：无穷大
-          timeout: 10000
+      var ads = this.$route.query.pos;
+      if (ads) {
+        this.address = ads;
+      } else {
+        var citySearch = "";
+        AMap.plugin("AMap.CitySearch", () => {
+          citySearch = new AMap.CitySearch();
         });
-        geolocation.getCurrentPosition();
-        AMap.event.addListener(geolocation, "complete", data => {
-          this.address = data.addressComponent.building;
-          console.log(data);
-          setStorage("curLocalPos");
-        });
-        AMap.event.addListener(geolocation, "error", err => {
-          //console.error(err);
-          var data = getStorage("curLocalPos");
-          if (data) {
+        AMap.plugin("AMap.Geolocation", () => {
+          var geolocation = new AMap.Geolocation({
+            // 是否使用高精度定位，默认：true
+            enableHighAccuracy: false,
+            // 设置定位超时时间，默认：无穷大
+            timeout: 3000
+          });
+          geolocation.getCurrentPosition();
+          AMap.event.addListener(geolocation, "complete", data => {
             this.address = data.addressComponent.building;
-          }
+          });
+          AMap.event.addListener(geolocation, "error", err => {
+            //console.error(err);
+            citySearch.getLocalCity((status, result) => {
+              if (status === "complete" && result.info === "OK") {
+                // 查询成功，result即为当前所在城市信息
+                //console.log(result);
+                this.address = result.city;
+              }
+            });
+          });
         });
-      });
+      }
     }
   },
   computed: {
@@ -261,13 +275,23 @@ export default {
       this.storeData = [];
       this.page = 0;
       this.getList();
-      this.$refs.parentScroll.scrollToElement('.storelist_wrap',300,0,-searchBoxHeight)
+      this.$refs.parentScroll.scrollToElement(
+        ".storelist_wrap",
+        300,
+        0,
+        -searchBoxHeight
+      );
     },
     filterKey: function(newVal) {
       this.storeData = [];
       this.page = 0;
       this.getList();
-      this.$refs.parentScroll.scrollToElement('.storelist_wrap',300,0,-searchBoxHeight)
+      this.$refs.parentScroll.scrollToElement(
+        ".storelist_wrap",
+        300,
+        0,
+        -searchBoxHeight
+      );
     }
   }
 };
@@ -397,7 +421,7 @@ export default {
     }
   }
   .real {
-    z-index:110;
+    z-index: 110;
   }
 }
 </style>

@@ -27,7 +27,7 @@
           <h3>当前位置</h3>
           <div class="pos">
             <p>{{pos_text}}</p>
-            <div class="re_pos">
+            <div class="re_pos" @click="position">
               <i class="el-icon-location-outline"></i>
               重新定位
             </div>
@@ -42,13 +42,13 @@
                 <div class="lists">
 
                   <ul>
-                    <li v-for="(item,key) in address_list" :key="key" @click="setAddress(item)">
+                    <router-link :to="{path:'index',query:{pos:item.address.name}}" tag="li" v-for="(item,index) in address_list" :key="index" @click="setAddress(item)">
                       <h3>{{item.address.name}}
                         <section v-show="item.tag">{{item.tag}}</section>
                       </h3>
                       <h4>{{item.address.address}}</h4>
                       <p>{{getUser(item)}}</p>
-                    </li>
+                    </router-link>
                   </ul>
 
                 </div>
@@ -139,6 +139,8 @@ pos = new AMap.LngLat(114.3308, 30.53347);
 var pinyin = require("pinyin");
 import scroll from "@/components/scroll";
 import { setStorage, getStorage } from "@/script/storage";
+import { Toast, Indicator } from "mint-ui";
+import { AddressCtrl } from "@/api/address";
 export default {
   data() {
     return {
@@ -152,8 +154,8 @@ export default {
       search_type_arr: ["全部", "写字楼", "小区", "学校"],
       serach_result: [],
       address_list: {},
-      city: "武汉市",
-      choose_city: "武汉市",
+      city: "",
+      choose_city: "",
       choose_address: null
     };
   },
@@ -225,6 +227,57 @@ export default {
       this.$nextTick(() => {
         this.$refs.searchScroll.refresh();
       });
+    },
+    position() {
+      //定位
+      var citySearch = "";
+      AMap.plugin("AMap.CitySearch", () => {
+        citySearch = new AMap.CitySearch();
+      });
+      AMap.plugin("AMap.Geolocation", () => {
+        var geolocation = new AMap.Geolocation({
+          // 是否使用高精度定位，默认：true
+          enableHighAccuracy: false,
+          // 设置定位超时时间，默认：无穷大
+          timeout: 3000
+        });
+        geolocation.getCurrentPosition();
+        AMap.event.addListener(geolocation, "complete", data => {
+          this.pos = data;
+          this.pos_text = data.addressComponent.building;
+        });
+        AMap.event.addListener(geolocation, "error", err => {
+          //console.error(err);
+          citySearch.getLocalCity((status, result) => {
+            if (status === "complete" && result.info === "OK") {
+              // 查询成功，result即为当前所在城市信息
+              //console.log(result);
+              this.pos_text = this.city = this.choose_city = result.city;
+              this.setCity(result.city);
+            }
+          });
+        });
+      });
+    },
+    init_() {
+      this.position();
+      this.$http
+        .all([this.ctrl.getAddressList(), this.ctrl.getCitys()])
+        .then(
+          this.$http.spread((d, d1) => {
+            var d = d.data;
+            if (d.status == 1) {
+              this.address_list = d.data;
+            }
+            var d1 = d1.data;
+            if (d1.status == 1) {
+              this.city_obj = d1.data;
+            }
+          })
+        )
+        .catch(e => {
+          console.log(e);
+        });
     }
   },
   computed: {
@@ -244,6 +297,8 @@ export default {
     scroll
   },
   mounted() {
+    this.ctrl = new AddressCtrl();
+    this.init_();
     AMap.plugin("AMap.PlaceSearch", () => {
       this.search = new AMap.PlaceSearch({
         city: this.city,
@@ -252,82 +307,6 @@ export default {
         pageSize: 20
       });
     });
-    this.address = getStorage("address_list");
-    //定位
-    AMap.plugin("AMap.Geolocation", () => {
-      var geolocation = new AMap.Geolocation({
-        // 是否使用高精度定位，默认：true
-        enableHighAccuracy: false,
-        // 设置定位超时时间，默认：无穷大
-        timeout: 50000
-      });
-      geolocation.getCurrentPosition();
-      AMap.event.addListener(geolocation, "complete", data => {
-        this.pos = data;
-        this.pos_text = data.addressComponent.building;
-        setStorage("curLocalPos", data);
-      });
-      AMap.event.addListener(geolocation, "error", err => {
-        //console.error(err);
-        var data = getStorage("curLocalPos");
-        if (data) {
-          this.pos = data;
-          this.pos_text = data.addressComponent.building;
-        }
-      });
-    });
-
-    //获取所有城市
-    AMap.plugin("AMap.DistrictSearch", () => {
-      var d = new AMap.DistrictSearch({
-        subdistrict: 2
-      });
-      d.search("中国", (status, result) => {
-        if (status == "complete") {
-          var o = getAllCity(result.districtList);
-          var arr = [];
-          for (var attr in o) {
-            arr.push(o[attr]);
-          }
-
-          //拆分成拼音
-          var arr = arr.map(item => {
-            let py = pinyin(item.name.charAt(0), {
-              style: pinyin.STYLE_NORMAL
-            });
-            item.sortPy = py[0][0][0];
-            return item;
-          });
-          //按拼音分组
-          arr.forEach(item => {
-            var k = item.sortPy;
-            if (k.charCodeAt(0) > 1000) {
-              if (!this.city_obj.z_other) {
-                this.city_obj.z_other = [];
-              }
-              this.city_obj.z_other.push(item);
-              return;
-            }
-            if (!this.city_obj[k] || !Array.isArray(this.city_obj[k])) {
-              this.city_obj[k] = [];
-            }
-            this.city_obj[k].push(item);
-          });
-          //json按key重新排序
-          var keyArr = Object.keys(this.city_obj).sort();
-          var sortObj = {};
-          keyArr.forEach(item => {
-            sortObj[item] = this.city_obj[item];
-          });
-          this.city_obj = sortObj;
-        }
-      });
-    });
-
-    var address_list = getStorage("address_list");
-    if (address_list) {
-      this.address_list = address_list;
-    }
   },
   watch: {
     page: function(val) {
@@ -337,17 +316,6 @@ export default {
     }
   }
 };
-function getAllCity(arr, obj_) {
-  var obj = obj_ ? obj_ : {};
-  for (var i = 0; i < arr.length; i++) {
-    if (arr[i].districtList && arr[i].districtList.length) {
-      getAllCity(arr[i].districtList, obj);
-    } else {
-      obj[arr[i].citycode] = arr[i];
-    }
-  }
-  return obj;
-}
 </script>
 
 <style scoped lang="less">

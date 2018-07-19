@@ -16,6 +16,9 @@
 </template>
 
 <script>
+import { CartCtrl } from "@/api/store/cart";
+import { mapState } from "vuex";
+import { getStorage } from "@/script/storage";
 export default {
   props: {
     food: {
@@ -24,18 +27,54 @@ export default {
   },
   methods: {
     productAdd(ev) {
-      this.food.cartCount++;
-      this.$nextTick(() => {
-        this.$emit("ballDown", ev.target);
-        this.$emit("cartChange");
-      });
+      this.ctrl
+        .addCart({
+          storeId: this.store_._id,
+          category: this.food.category,
+          foodId: this.food.product_id,
+        })
+        .then(d => {
+          if (d.data.status == 1) {
+            this.food.cartCount = d.data.count;
+            this.$nextTick(() => {
+              this.$emit("ballDown", ev.target);
+              this.$emit("cartChange");
+            });
+          }
+        })
+        .catch(e => {
+          console.log(e);
+        });
     },
     productMinus() {
       if (this.food.cartCount > 0) {
-        this.food.cartCount--;
-        this.$emit("cartChange");
+        this.ctrl
+          .minusCart({
+            storeId: this.store_._id,
+            category: this.food.category,
+            foodId: this.food.product_id
+          })
+          .then(d => {
+            if (d.data.status == 1) {
+              this.food.cartCount = d.data.count;
+              this.$emit("cartChange");
+            }
+          })
+          .catch(e => {
+            console.log(e);
+          });
       }
     }
+  },
+  computed: {
+    ...mapState({
+      store_: state => {
+        return state.store.store_;
+      }
+    })
+  },
+  created() {
+    this.ctrl = new CartCtrl();
   }
 };
 </script>

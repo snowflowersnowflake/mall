@@ -1,8 +1,8 @@
 <template>
-  <div class="store_wrap" :class="{pb1000:completeData.length<4}">
+  <div class="store_wrap">
     <router-link v-if="refeash" tag="div" :to="{path:'/store/product',query:{id:item._id}}" class="shop" v-for="(item,index) in dd" :key="index">
       <div class="logo">
-        <img v-lazy="item.img_url" alt="">
+        <img v-lazy="item.img_url" :key="item.img_url" alt="">
       </div>
       <div class="shop-info">
         <div class="title-line">
@@ -180,6 +180,7 @@ export default {
 }
 .store_wrap {
   padding: 0 30 / @r;
+  min-height: 100%;
   position: relative;
 }
 .shop {

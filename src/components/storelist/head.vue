@@ -50,7 +50,7 @@
           </div>
           <div class="btn_group">
             <div class="btn" @click="filterClear">清空</div>
-            <div class="btn" @click="filterEnter">查看12345个商家</div>
+            <div class="btn" @click="filterEnter">确定</div>
           </div>
         </div>
       </el-collapse-transition>

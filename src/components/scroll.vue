@@ -2,7 +2,7 @@
   <div class="bs_wrap" ref="wrapper">
     <div>
       <div class="up" v-show="pullDownRefresh">
-        <i class="fa fa-long-arrow-down" :class="{'over':pullupOver>100}"></i>
+        <i class="fa fa-long-arrow-down" :class="{'over':pullupOver>70}"></i>
         <p>{{pullupTxt}}</p>
       </div>
       <slot></slot>
@@ -15,7 +15,7 @@
 
 <script>
 import BScroll from "better-scroll";
-import { Indicator } from 'mint-ui';
+import { Indicator } from "mint-ui";
 export default {
   props: {
     /**
@@ -84,13 +84,13 @@ export default {
       default: 20
     }
   },
-  data(){
+  data() {
     return {
-      pulldownTxt:'上拉加载更多',
-      pulldownOver:0,
-      pullupTxt:'继续下拉刷新页面',
-      pullupOver:0
-    }
+      pulldownTxt: "上拉加载更多",
+      pulldownOver: 0,
+      pullupTxt: "继续下拉刷新页面",
+      pullupOver: 0
+    };
   },
   mounted() {
     // 保证在DOM渲染完毕后初始化better-scroll
@@ -114,20 +114,20 @@ export default {
 
       // 是否派发滚动事件
       if (this.listenScroll) {
-        this.scroll.on("scroll", pos => {          
+        this.scroll.on("scroll", pos => {
           if (this.scroll.y < this.scroll.maxScrollY) {
-            this.pulldownOver = this.scroll.maxScrollY-this.scroll.y;
-            if(this.pulldownOver>50){
-              this.pulldownTxt = '松开手指开始加载'
-            }else {
-              this.pulldownTxt = '上拉加载更多'
+            this.pulldownOver = this.scroll.maxScrollY - this.scroll.y;
+            if (this.pulldownOver > 50) {
+              this.pulldownTxt = "松开手指开始加载";
+            } else {
+              this.pulldownTxt = "上拉加载更多";
             }
-          }else if(this.scroll.y>0&&this.scroll.y<=100){
-            this.pullupOver = this.scroll.y
-            this.pullupTxt = '继续下拉刷新页面'
-          }else if(this.scroll.y>100){
+          } else if (this.scroll.y > 0 && this.scroll.y <= 70) {
             this.pullupOver = this.scroll.y;
-            this.pullupTxt = '松开手指刷新页面';
+            this.pullupTxt = "继续下拉刷新页面";
+          } else if (this.scroll.y > 70) {
+            this.pullupOver = this.scroll.y;
+            this.pullupTxt = "松开手指刷新页面";
           }
           this.$emit("scroll", pos);
         });
@@ -138,7 +138,7 @@ export default {
         this.scroll.on("touchEnd", pos => {
           // 滚动到底部
           if (this.scroll.y <= this.scroll.maxScrollY - 50) {
-            Indicator.open('加载中...')
+            Indicator.open("加载中...");
             this.$emit("scrollToEnd");
           }
         });
@@ -148,7 +148,7 @@ export default {
       if (this.pullDownRefresh) {
         this.scroll.on("touchEnd", pos => {
           // 下拉动作
-          if (this.scroll.y > 100) {
+          if (this.scroll.y > 70) {
             this.$emit("pulldown");
           }
         });
@@ -185,15 +185,15 @@ export default {
       Indicator.close();
       this.scroll && this.scroll.finishPullDown();
     },
-    closePullDown(){
+    closePullDown() {
       Indicator.close();
-      this.pulldownTxt = '没有更多'
+      this.pulldownTxt = "没有更多";
       this.scroll && this.scroll.closePullUp();
     }
   },
   watch: {
     // 监听数据的变化，延时refreshDelay时间后调用refresh方法重新计算，保证滚动效果正常
-    data() {
+    data(newVal) {
       setTimeout(() => {
         this.refresh();
       }, this.refreshDelay);
@@ -231,10 +231,10 @@ export default {
   bottom: 100%;
   left: 0;
   right: 0;
-  padding-bottom: 20/@r;
+  padding-bottom: 20 / @r;
   i {
     color: @blue;
-    font-size: 60/@r;
+    font-size: 60 / @r;
     transition: 0.3s;
     &.over {
       transform: rotate(180deg);

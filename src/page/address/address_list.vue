@@ -20,7 +20,7 @@
       </div>
 
       <ul>
-        <li v-for="(item,key) in address" :key="key">
+        <li v-for="(item,index) in address" :key="index">
           <div class="text">
             <h3>{{item.address.name}}
               <section v-show="item.tag">{{item.tag}}</section>
@@ -29,7 +29,7 @@
             <p>{{getUser(item)}}</p>
           </div>
 
-          <router-link :to="{path:'/editaddress',query:{id:item.id}}" class="edit">
+          <router-link :to="{path:'/editaddress',query:{_id:item._id}}" class="edit">
             <i class="el-icon-edit-outline"></i>
           </router-link>
         </li>
@@ -40,6 +40,8 @@
 
 <script>
 import { getStorage } from "@/script/storage";
+import { AddressCtrl } from "@/api/address";
+import { Indicator } from "mint-ui"
 export default {
   data() {
     return {
@@ -48,7 +50,7 @@ export default {
   },
   methods: {
     getUser(address) {
-      if (address && address.id) {
+      if (address && address._id) {
         var { name, sex, tel } = address;
 
         if (sex) {
@@ -59,11 +61,22 @@ export default {
       }
     }
   },
-  mounted() {
-    var arr = getStorage("address_list");
-    if (arr) {
-      this.address = arr;
-    }
+  created() {
+    this.ctrl = new AddressCtrl();
+    Indicator.open('加载中...')
+    this.ctrl
+      .getAddressList()
+      .then(d => {
+        var d = d.data;
+        if (d.status == 1) {
+          this.address = d.data;
+        }
+        Indicator.close()
+      })
+      .catch(e => {
+        Indicator.close()
+        console.log(e);
+      });
   }
 };
 </script>

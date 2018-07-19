@@ -86,7 +86,8 @@
 
 <script>
 import { setStorage, getStorage } from "@/script/storage";
-import { mapMutations } from "vuex";
+import { AddressCtrl } from "@/api/address";
+import { Toast, Indicator, MessageBox } from "mint-ui";
 export default {
   data() {
     return {
@@ -125,11 +126,10 @@ export default {
           iframe.postMessage("hello", "https://m.amap.com/picker/");
           this.opacity = 1;
           this.isloadding = false;
-          console.log(112321)
-          
         };
-        window.addEventListener("message", e=>{this.listener(e)});
-        
+        window.addEventListener("message", e => {
+          this.listener(e);
+        });
       });
     },
     mapOff() {
@@ -151,78 +151,114 @@ export default {
         this.tag = str;
       }
     },
-    generateId() {
-      var id = Date.now();
-      var s = Math.floor(Math.random() * 100);
-      var e = Math.floor(Math.random() * 100);
-      s = s < 10 ? "0" + s : s.toString();
-      e = e < 10 ? "0" + e : e.toString();
-      id = s + id + e;
-      return id;
-    },
-    setStorage(id) {
+    editAddress() {
       if (
         this.name &&
         !this.address.isdefault &&
         this.address.detail &&
         this.tel
       ) {
-        var id = id;
         var obj = {
-          id,
+          address_id: this.id,
           name: this.name,
           sex: this.sex,
           tel: this.tel,
           address: this.address,
           tag: this.tag
         };
-        var address_list = getStorage("address_list") || {};
-        address_list[id] = obj;
-        setStorage("address_list", address_list);
-        this.openToast("地址保存成功");
-        this.$router.back();
+        Indicator.open("加载中...");
+        this.ctrl
+          .editAddress(obj)
+          .then(d => {
+            var d = d.data;
+            Indicator.close();
+            if (d.status == 1) {
+              Toast({
+                message: "地址保存成功",
+                position: "bottom"
+              });
+
+              this.$router.back();
+            } else {
+              Toast({
+                message: d.msg,
+                position: "bottom"
+              });
+            }
+          })
+          .catch(e => {
+            Indicator.close();
+            console.log(e);
+          });
       } else {
         alert("资料没填完");
       }
     },
     rmAddress() {
-      var address_list = getStorage("address_list") || {};
-      delete address_list[this.id];
-      setStorage("address_list", address_list);
-      this.openToast("地址删除成功");
-      this.$router.back();
+      MessageBox.confirm("确定执行此操作?").then(() => {
+        Indicator.open("加载中...");
+        this.ctrl
+          .rmAddressById({ address_id: this.id })
+          .then(d => {
+            Indicator.close();
+            var d = d.data;
+            if (d.status == 1) {
+              Toast({
+                message: "地址删除成功",
+                position: "bottom"
+              });
+              this.$router.back();
+            } else {
+              Toast({
+                message: d.msg,
+                position: "bottom"
+              });
+            }
+          })
+          .catch(e => {
+            Indicator.close();
+            console.log(e);
+          });
+      }).catch((e)=>{
+        console.log(e)
+      })
     },
     save() {
-      var id = this.id || this.generateId();
-      this.setStorage(id);
+      this.editAddress(this.id);
     },
     init_() {
-      if (this.$route.query.id) {
-        //修改地址
-        this.type = "修改地址";
-        var aid = this.$route.query.id;
-        var address_list = getStorage("address_list") || {};
-        if (address_list[aid]) {
-          var { id, address, sex, tag, tel, name } = address_list[aid];
-          this.address = address;
-          this.sex = sex;
-          this.tag = tag;
-          this.tel = tel;
-          this.id = id;
-          this.name = name;
-        } else {
-          this.type = "新增地址";
-        }
+      this.id = this.$route.query._id;
+      if (this.id) {
+        Indicator.open("加载中...");
+        this.ctrl
+          .getAddressById({ address_id: this.id })
+          .then(d => {
+            var d = d.data;
+            if (d.status == 1) {
+              this.address = d.data.address;
+              this.sex = d.data.sex;
+              this.tag = d.data.tag;
+              this.tel = d.data.tel;
+              this.name = d.data.name;
+              this.type = "修改地址";
+            }
+            Indicator.close();
+          })
+          .catch(e => {
+            Indicator.close();
+            console.log(e);
+          });
       } else {
         //新增地址
         this.type = "新增地址";
       }
-    },
-    ...mapMutations(["openToast"])
+    }
+  },
+  created() {
+    this.ctrl = new AddressCtrl();
   },
   mounted() {
     this.init_();
-    console.log(123);
   }
 };
 </script>

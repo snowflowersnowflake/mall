@@ -10,8 +10,8 @@
 
       </div>
       <div class="text">
-        <section>￥{{totalPrice}}
-          <span v-show="initialPrice>totalPrice">￥{{initialPrice}}</span>
+        <section>￥{{totalPrice||initialPrice}}
+          <span v-if="initialPrice>totalPrice">￥{{initialPrice}}</span>
         </section>
         <p>令需配送费{{store_msg.transport_price}}元</p>
       </div>
@@ -28,7 +28,7 @@
     </div>
     <div class="mj_block" ref="mj_block" v-html="mjTip" v-if="mj"></div>
     <transition name="up">
-      <div class="cart_list" ref="cart_list" v-show="showShadow">
+      <div class="cart_list" ref="cart_list" v-show="showShadow&&foods.length">
         <div class="mj_block_fake" v-if="mj" v-html="mjTip"></div>
         <div class="title">
           <div>已选商品</div>
@@ -48,7 +48,7 @@
       </div>
     </transition>
     <transition name="fade">
-      <div class="shadow" @click="showShadow=!showShadow" v-show="showShadow"></div>
+      <div class="shadow" @click="showShadow=!showShadow" v-show="showShadow&&foods.length"></div>
     </transition>
 
   </div>

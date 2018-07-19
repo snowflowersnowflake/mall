@@ -44,6 +44,10 @@ export default {
             for(var attr in state.filter){
                 state.filter[attr].realCheck = state.filter[attr].checked
             }
+        },
+        resetFilterIndex(state){
+            state.activeFakeIndex = state.activeRealIndex = 0
+            state.active = ''
         }
     },
     getters: {
