@@ -55,6 +55,9 @@
 
         </div>
       </scroll>
+      <transition name="cartin">
+        <cart-btn v-show="showCart"></cart-btn>
+      </transition>
     </div>
 
   </div>
@@ -71,6 +74,7 @@ import lisss from "@/components/storelist/store";
 import { setStorage, getStorage } from "@/script/storage";
 import { mapState, mapMutations } from "vuex";
 import { IndexCtrl } from "@/api/index";
+import cartBtn from "@/components/storelist/cart";
 export default {
   data() {
     return {
@@ -90,11 +94,14 @@ export default {
       category: [],
       recommend: [],
       page: 0,
-      posy: ""
+      posy: "",
+      showCart: true,
+      timeout: null
     };
   },
   methods: {
     _scroll(pos) {
+      this.hideCart()
       var bo = pos.y <= -searchTop;
       this.posy = pos.y;
       if (this.showHead != bo) {
@@ -108,6 +115,13 @@ export default {
       } else {
         this.showFakeNav = false;
       }
+    },
+    hideCart() {
+      this.showCart = false;
+      clearTimeout(this.timeout);
+      this.timeout = setTimeout(() => {
+        this.showCart = true;
+      }, 500);
     },
     srollTotop(isShow) {
       if (!this.showFakeNav) {
@@ -138,7 +152,6 @@ export default {
       //controller_show
     },
     init_() {
-      Indicator.open("加载中");
       this.storeData = [];
       this.page = 0;
       this.position();
@@ -164,17 +177,16 @@ export default {
         )
         .catch(e => {
           alert(e);
-          Indicator.close();
         });
     },
     loadTop() {
-      window.location.reload();
+      this.$route.query.pos = ''
+      this.init_();
     },
     loadBottom() {
       this.getList();
     },
     getList() {
-      Indicator.open("加载中");
       this.indexCtrl
         .getStoreList({
           page: this.page,
@@ -259,7 +271,8 @@ export default {
     advertising,
     scroll,
     storelist,
-    lisss
+    lisss,
+    cartBtn
   },
   mounted() {
     window.searchTop = this.$refs.hideable.clientHeight;
@@ -329,7 +342,10 @@ export default {
           color: #fff;
           line-height: 90 / @r;
           display: flex;
+          flex:none;
           align-items: center;
+           max-width: 70%;
+           .text_one_line;
           span {
             margin-left: 28 / @r;
             position: relative;
@@ -423,5 +439,13 @@ export default {
   .real {
     z-index: 110;
   }
+}
+.cartin-enter-active,
+.cartin-leave-active {
+  transition: 0.5s;
+}
+.cartin-enter,
+.cartin-leave-to {
+  transform: translateX(200%);
 }
 </style>

@@ -146,7 +146,6 @@ export default {
     },
     init__() {
       var id = this.$route.query.id || 1;
-      Indicator.open('加载中...')
       this.$http
         .all([
           this.indexCtrl.getStoreDetail(id),
@@ -184,6 +183,7 @@ export default {
         .then(d => {
           var d = d.data;
           this.iscollect = d.data[this.store_msg._id];
+          Indicator.close()
         })
         .catch(e => {
           console.log(e);

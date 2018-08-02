@@ -6,22 +6,22 @@
           <i class="el-icon-bell"></i>
         </div>
         <section>我的</section>
-        <div class="right">
-          <i class="el-icon-more"></i>
-        </div>
+        <router-link tag="div" to="userinfo" class="right">
+          <i class="el-icon-setting"></i>
+        </router-link>
       </div>
       <div class="header_bottom">
         <div class="wrap_">
           <div class="img_wrap">
             <img src="static/avatar.png" alt="">
           </div>
-          <div class="texts">
-            <p>3****5</p>
+          <router-link tag="div" to="userinfo" class="texts">
+            <p>{{nickName}}</p>
             <section>
               <i class="el-icon-mobile-phone"></i>
-              <span>15*******1</span>
+              <span>{{tel}}</span>
             </section>
-          </div>
+          </router-link>
         </div>
         <div class="icon_wrap" @click="logout">
           <i class="fa fa-power-off"></i>
@@ -37,13 +37,13 @@
         <p>钱包</p>
       </section>
       <section class="offer">
-        <strong>6
+        <strong>0
           <span>个</span>
         </strong>
         <p>优惠</p>
       </section>
       <section class="gold">
-        <strong>1551
+        <strong>{{coin}}
           <span>个</span>
         </strong>
         <p>金币</p>
@@ -151,12 +151,15 @@
 
 <script>
 import { mapMutations } from "vuex";
-import { rmStorage } from '@/script/storage'
-import { Toast } from "mint-ui"
+import { clearStorage } from "@/script/storage";
+import { Toast , Indicator } from "mint-ui";
+import { IndexCtrl } from "@/api/index";
 export default {
   data() {
     return {
-      key: "value"
+      nickName: "未登录",
+      tel: "未填写",
+      coin:0
     };
   },
   methods: {
@@ -164,13 +167,31 @@ export default {
       Toast({
         message: "没有实现功能",
         position: "bottom"
-      })
+      });
     },
-    logout(){
-      rmStorage('token');
-      this.$router.push('/login')
+    logout() {
+      clearStorage();
+
+      this.$router.push("/login");
+    },
+    init_() {
+      this.ctrl.getUserInfo().then(d => {
+        d = d.data;
+        if (d.status == 1) {
+          this.nickName = d.data.nickName;
+          this.coin = d.data.coin
+          if (d.data.tel) {
+            this.tel = d.data.tel;
+          }
+        }
+        Indicator.close()
+      });
     },
     ...mapMutations(["openToast"])
+  },
+  created() {
+    this.ctrl = new IndexCtrl();
+    this.init_();
   }
 };
 </script>
@@ -237,7 +258,7 @@ export default {
   border-top: 2 / @r solid #eee;
   border-bottom: 2 / @r solid #eee;
   > section {
-    flex: auto;
+    flex: 1;
     border-right: 1px solid #eee;
     text-align: center;
     padding: 70 / @r 050 / @r;

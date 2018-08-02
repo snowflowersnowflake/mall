@@ -9,13 +9,14 @@ export class StoreCtrl extends BaseApi {
             searchKey: obj.searchKey,
             page: obj.page,
             sortby: obj.sortby,
-            offer: obj.offer
+            offer: obj.offer,
+            "dn": Date.now()
         })
     }
     editCollections(obj = {}) {
-        return axios.post(`${this.apiUrl}editCollections`, obj)
+        return axios.post(`${this.apiUrl}editCollections`, Object.assign(obj,{'dn':Date.now()}))
     }
     getCollections(obj = {}) {
-        return axios.get(`${this.apiUrl}getCollections`, { params: obj })
+        return axios.get(`${this.apiUrl}getCollections`, { params: Object.assign(obj,{'dn':Date.now()}) })
     }
 }

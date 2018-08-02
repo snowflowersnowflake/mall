@@ -30,7 +30,7 @@
 
 <script>
 import { UserApi } from "@/api/user/user";
-import { mapMutations } from "vuex";
+import { Indicator, Toast } from "mint-ui";
 export default {
   data() {
     return {
@@ -50,18 +50,27 @@ export default {
             if (r.status == 1) {
               this.$router.replace("/login");
             }
-            this.openToast(r.msg);
+            Toast({
+              message: r.msg,
+              position: "bottom"
+            });
+            Indicator.close();
           })
           .catch(e => {
             console.log(e);
           });
-      }else if(this.pw!==this.pw2) {
-        this.openToast('两次输入密码不一致');
-      }else {
-        this.openToast('用户名或密码格式不正确');
+      } else if (this.pw !== this.pw2) {
+        Toast({
+          message: "两次输入密码不一致",
+          position: "bottom"
+        });
+      } else {
+        Toast({
+          message: "用户名或密码格式不正确",
+          position: "bottom"
+        });
       }
-    },
-    ...mapMutations(["openToast"])
+    }
   },
   created() {
     this.userApi = new UserApi();

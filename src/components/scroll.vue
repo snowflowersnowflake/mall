@@ -15,7 +15,6 @@
 
 <script>
 import BScroll from "better-scroll";
-import { Indicator } from "mint-ui";
 export default {
   props: {
     /**
@@ -134,14 +133,8 @@ export default {
       }
 
       // 是否派发滚动到底部事件，用于上拉加载
-      if (this.pullUpLoad) {
-        this.scroll.on("touchEnd", pos => {
-          // 滚动到底部
-          if (this.scroll.y <= this.scroll.maxScrollY - 50) {
-            Indicator.open("加载中...");
-            this.$emit("scrollToEnd");
-          }
-        });
+      if (this.pullUpLoad) {        
+        this.scroll.on("touchEnd", this.pl);
       }
 
       // 是否派发顶部下拉事件，用于下拉刷新
@@ -182,13 +175,22 @@ export default {
       this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments);
     },
     finishPullDown() {
-      Indicator.close();
       this.scroll && this.scroll.finishPullDown();
     },
     closePullDown() {
-      Indicator.close();
       this.pulldownTxt = "没有更多";
       this.scroll && this.scroll.closePullUp();
+    },
+    openPullUp() {
+      if (this.pullUpLoad) {        
+        this.scroll.off("touchEnd", this.pl);
+        this.scroll.on("touchEnd", this.pl);
+      }
+    },
+    pl() {
+      if (this.scroll.y <= this.scroll.maxScrollY - 50) {
+        this.$emit("scrollToEnd");
+      }
     }
   },
   watch: {

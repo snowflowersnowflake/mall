@@ -6,12 +6,18 @@ const CusIndex = r => require.ensure([], () => r(require('@/page/main/index')), 
 const Found = r => require.ensure([], () => r(require('@/page/main/found/found')), 'found');
 const Bills = r => require.ensure([], () => r(require('@/page/main/bills/bills')), 'bill');
 const Center = r => require.ensure([], () => r(require('@/page/main/center/center')), 'center');
+const UserInfo = r => require.ensure([], () => r(require('@/page/main/center/userinfo')), 'UserInfo');
+
+const AllCart = r => require.ensure([], () => r(require('@/page/store_list/all_cart'), 'AllCart'))
 
 const Store = r => require.ensure([], () => r(require('@/page/store'), 'store'))
 const Product = r => require.ensure([], () => r(require('@/page/store/product/product'), 'store'))
 const Evaluation = r => require.ensure([], () => r(require('@/page/store/evaluation/evaluation'), 'Evaluation'))
 const Seller = r => require.ensure([], () => r(require('@/page/store/seller/seller'), 'Seller'))
 const Checkout = r => require.ensure([], () => r(require('@/page/store/checkout/checkout'), 'Checkout'))
+const BillDetail = r => require.ensure([], () => r(require('@/page/store/checkout/bill'), 'bill'))
+const Rate = r => require.ensure([], () => r(require('@/page/store/checkout/rate'), 'rate'))
+
 const StoreList = r => require.ensure([], () => r(require('@/page/store_list/store_list'), 'StoreList'))
 const AddessList = r => require.ensure([], () => r(require('@/page/address/address_list'), 'AddessList'))
 const EditAddress = r => require.ensure([], () => r(require('@/page/address/edit_address'), 'EditAddress'))
@@ -110,7 +116,7 @@ export default new Router({
     {
       path: '/editaddress',
       name: 'EditAddress',
-      meta: { index: 3 },
+      meta: { index: 10 },
       component: EditAddress
     },
     {
@@ -135,7 +141,7 @@ export default new Router({
       path: '/checkout',
       name: "Checkout",
       component: Checkout,
-      meta: { index: 10 }
+      meta: { index: 5 }
     },
     {
       path: '/login',
@@ -148,6 +154,30 @@ export default new Router({
       name: "reg",
       component: Reg,
       meta: { index: 20 }
+    },
+    {
+      path: '/userinfo',
+      name: 'UserInfo',
+      meta: { index: 3 },
+      component: UserInfo
+    },
+    {
+      path: '/billDetail',
+      name: 'BillDetail',
+      meta: { index: 3 },
+      component: BillDetail
+    },
+    {
+      path: '/rate',
+      name: 'Rate',
+      meta: { index: 3 },
+      component: Rate
+    },
+    {
+      path: '/allCart',
+      name: 'AllCart',
+      meta: { index: 3 },
+      component: AllCart
     }
   ]
 })

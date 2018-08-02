@@ -15,7 +15,7 @@
         </section>
         <p>令需配送费{{store_msg.transport_price}}元</p>
       </div>
-      <div :class="{'checkout':true,'active':initialPrice>=store_msg.start_price}">
+      <div :class="{'checkout':true,'active':initialPrice>=store_msg.start_price}" @click.stop="checkout">
         {{checkout_}}
       </div>
     </div>
@@ -57,6 +57,9 @@
 <script>
 import scroll from "@/components/scroll";
 import operating from "./cartOperating";
+import { CartCtrl } from "@/api/store/cart";
+import { Indicator, Toast } from "mint-ui";
+import { mapState } from "vuex";
 export default {
   props: {
     foods: {
@@ -143,24 +146,39 @@ export default {
         var inner = el.querySelector(".inner");
         inner.style.transform = inner.style.WebkitTransform =
           "translate3d(0,0,0)";
-        var timeString = window.getComputedStyle(el, null)[
+        /* var timeString = window.getComputedStyle(el, null)[
           "transition-duration"
         ];
         var time = parseFloat(timeString) * 1000;
+         setTimeout(done,time+1000) */
         el.addEventListener("transitionend", done);
+       
       });
     },
     afterEnter(el) {
-      var ball = this.dropBalls.shift();
-      if (ball) {
-        ball.show = false;
-      }
+      //alert(window.getComputedStyle(el).transform)
+        var ball = this.dropBalls.shift();
+        if (ball) {
+          ball.show = false;
+        }
     },
     cart_clear() {
-      this.foods.forEach(item => {
-        item.cartCount = 0;
+      //清空购物车
+      this.ctrl.cartClear({ store_id: this.store_id }).then(d => {
+        d = d.data;
+        if (d.status == 1) {
+          this.foods.forEach(item => {
+            item.cartCount = 0;
+          });
+          this.showShadow = false;
+        } else {
+          Toast({
+            message: d.msg,
+            position: "bottom"
+          });
+        }
+        Indicator.close();
       });
-      this.showShadow = false;
     },
     openShadow() {
       if (this.foods.length) {
@@ -171,8 +189,26 @@ export default {
       var obj = {
         proto: this.initialPrice,
         total: this.totalPrice
-      }
-      this.$emit('cartChange',obj)
+      };
+      this.$emit("cartChange", obj);
+    },
+    checkout() {
+      this.ctrl
+        .checkout({
+          store_id: this.store_id,
+          initPrice: this.initialPrice,
+          totalPrice: this.totalPrice
+        })
+        .then(d => {
+          d = d.data;
+          if (d.status == 1) {
+            this.$router.push({
+              path: "/checkout",
+              query: { billId: d.data.billId }
+            });
+          }
+          Indicator.close();
+        });
     }
   },
   components: {
@@ -199,32 +235,33 @@ export default {
     },
     totalPrice() {
       var price = this.initialPrice;
+      //购物车有没有折扣商品
+      var has_discount = this.foods.some(item => {
+        return item.is_discount;
+      });
       //店铺是否有满减活动
-      if (this.mj) {
-        //购物车有没有折扣商品
-        var has_discount = this.foods.some(item => {
-          return item.is_discount;
+      if (this.mj && !has_discount) {
+        var satisfy = 0;
+        var minus = 0;
+        this.mj.forEach(item => {
+          if (price >= item.satisfy) {
+            satisfy = item.satisfy;
+            minus = item.minus;
+          }
         });
-
-        if (!has_discount) {
-          var satisfy = 0;
-          var minus = 0;
-          this.mj.forEach(item => {
-            if (price >= item.satisfy) {
-              satisfy = item.satisfy;
-              minus = item.minus;
-            } else {
-              // 距离 满item.satisfy减item.minus
-              // 还差 item.satisfy-price 元 可以减 item.minus
-            }
-          });
-          //已满 satisfy 元 减 minus元
-          price -= minus;
-        }
-        //有折扣商品不参与满减直接跳出
+        //已满 satisfy 元 减 minus元
+        price -= minus;
         price = Math.round(price * 100) / 100;
         return price;
       }
+      //有折扣商品不参与满减 减去折扣金额
+      this.foods.forEach(item => {
+        if (item.is_discount) {
+          price -= (item.price[0].price - item.real_price) * item.cartCount;
+        }
+      });
+      price = Math.round(price * 100) / 100;
+      return price;
     },
     checkout_() {
       if (this.initialPrice == 0) {
@@ -237,6 +274,7 @@ export default {
       } else {
         return "去结算";
       }
+      return "";
     },
     mj() {
       if (
@@ -302,11 +340,19 @@ export default {
       } else {
         return "购物车内有折扣商品,不能参与满减活动";
       }
-    }
+    },
+    ...mapState({
+      store_id(state) {
+        return state.store.store_._id;
+      }
+    })
+  },
+  created() {
+    this.ctrl = new CartCtrl();
   },
   watch: {
-    foods:function(newVal){
-      this.cartChange()
+    foods: function(newVal) {
+      this.cartChange();
     }
   }
 };
@@ -394,9 +440,10 @@ export default {
     z-index: 10;
     .ball {
       position: fixed;
-      transition: all 0.3s linear;
+      transition: all 0.5s linear;
+      z-index: 99;
       .inner {
-        transition: all 0.3s cubic-bezier(0.26, -0.62, 0.92, 0.04);
+        transition: all 0.5s cubic-bezier(0.26, -0.62, 0.92, 0.04);
         height: 30 / @r;
         width: 30 / @r;
         border-radius: 50%;

@@ -27,7 +27,7 @@
         <div class="filter" v-show="showFilter">
           <div class="filter_title">
             商家服务
-            <span>(可多选)</span>
+            <span>(可多选,没有功能)</span>
           </div>
           <div class="block_1">
             <ul>

@@ -1,7 +1,7 @@
 <template>
   <div class="address_list">
     <header>
-      <div class="back" @click="$router.back(-1)">
+      <div class="back" @click="back">
         <i class="el-icon-arrow-left"></i>
       </div>
       <h3>收货地址</h3>
@@ -20,7 +20,7 @@
       </div>
 
       <ul>
-        <li v-for="(item,index) in address" :key="index">
+        <li v-for="(item,index) in address" :key="index" @click="choose(item)">
           <div class="text">
             <h3>{{item.address.name}}
               <section v-show="item.tag">{{item.tag}}</section>
@@ -29,9 +29,9 @@
             <p>{{getUser(item)}}</p>
           </div>
 
-          <router-link :to="{path:'/editaddress',query:{_id:item._id}}" class="edit">
+          <div @click.stop="link(item)" class="edit">
             <i class="el-icon-edit-outline"></i>
-          </router-link>
+          </div>
         </li>
       </ul>
     </div>
@@ -43,6 +43,7 @@ import { getStorage } from "@/script/storage";
 import { AddressCtrl } from "@/api/address";
 import { Indicator } from "mint-ui"
 export default {
+  props:["select"],
   data() {
     return {
       address: []
@@ -59,17 +60,35 @@ export default {
           return `${name}(女士) ${tel}`;
         }
       }
+    },
+    back() {
+      if(!this.select){
+        this.$router.back(-1);
+      }else {
+        this.$emit('address-back');
+      }
+    },
+    choose(item){
+      this.$emit('select',item)
+    },
+    link(item){
+      this.$router.push({path:'/editaddress',query:{"_id":item._id}})
     }
   },
   created() {
     this.ctrl = new AddressCtrl();
-    Indicator.open('加载中...')
     this.ctrl
       .getAddressList()
       .then(d => {
         var d = d.data;
         if (d.status == 1) {
           this.address = d.data;
+          if(this.address.length) {
+            //console.log(this.address[0])
+            this.choose(this.address[0])
+          }else {
+            this.choose(false)
+          }
         }
         Indicator.close()
       })

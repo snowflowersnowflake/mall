@@ -16,7 +16,8 @@ h6 {
   font-weight: normal;
 }
 input,
-button {
+button,
+textarea {
   -webkit-appearance: none;
   border-radius: 0;
   outline: none;

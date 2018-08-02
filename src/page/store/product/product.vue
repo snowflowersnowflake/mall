@@ -98,7 +98,6 @@ export default {
       setStorage("cart", this.cart);
     },
     init_() {
-      Indicator.open("加载中...");
       this.ctrl
         .getGoodsAndCart()
         .then(

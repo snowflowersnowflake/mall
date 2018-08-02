@@ -166,7 +166,6 @@ export default {
           address: this.address,
           tag: this.tag
         };
-        Indicator.open("加载中...");
         this.ctrl
           .editAddress(obj)
           .then(d => {
@@ -196,7 +195,6 @@ export default {
     },
     rmAddress() {
       MessageBox.confirm("确定执行此操作?").then(() => {
-        Indicator.open("加载中...");
         this.ctrl
           .rmAddressById({ address_id: this.id })
           .then(d => {
@@ -229,7 +227,6 @@ export default {
     init_() {
       this.id = this.$route.query._id;
       if (this.id) {
-        Indicator.open("加载中...");
         this.ctrl
           .getAddressById({ address_id: this.id })
           .then(d => {

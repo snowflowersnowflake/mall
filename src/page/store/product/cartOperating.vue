@@ -18,6 +18,7 @@
 <script>
 import { CartCtrl } from "@/api/store/cart";
 import { mapState } from "vuex";
+import { Indicator } from "mint-ui";
 import { getStorage } from "@/script/storage";
 export default {
   props: {
@@ -41,6 +42,7 @@ export default {
               this.$emit("cartChange");
             });
           }
+          Indicator.close()
         })
         .catch(e => {
           console.log(e);
@@ -59,6 +61,7 @@ export default {
               this.food.cartCount = d.data.count;
               this.$emit("cartChange");
             }
+            Indicator.close()
           })
           .catch(e => {
             console.log(e);

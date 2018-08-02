@@ -88,7 +88,6 @@ export default {
     search() {
       this.$refs.inp.blur();
       //先发送请求
-      Indicator.open("加载中");
       this.ctrl
         .searchStore({
           searchKey: this.search_key,

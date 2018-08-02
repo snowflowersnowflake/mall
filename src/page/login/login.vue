@@ -1,40 +1,40 @@
 <template>
-    <div class="reg_page">
-        <header>
-            <div class="back" @click="$router.back(-1)">
-                <i class="el-icon-arrow-left"></i>
-            </div>
-            <h3>登录</h3>
-            <router-link tag="div" to="/reg" class="to_reg">
-                注册
-            </router-link>
-        </header>
-        <div class="content">
-            <div class="list">
-                <label>
-                    <input type="text" v-model="name" placeholder="输入账号">
-                </label>
-                <label>
-                    <input type="password" v-model="pw" placeholder="输入密码">
-                </label>
-            </div>
-            <section class="btn_wrap">
-                <div class="btn" @click="login">登录</div>
-            </section>
-        </div>
+  <div class="reg_page">
+    <header>
+      <div class="back" @click="$router.back(-1)">
+        <i class="el-icon-arrow-left"></i>
+      </div>
+      <h3>登录</h3>
+      <router-link tag="div" to="/reg" class="to_reg">
+        注册
+      </router-link>
+    </header>
+    <div class="content">
+      <div class="list">
+        <label>
+          <input type="text" v-model="name" placeholder="输入账号">
+        </label>
+        <label>
+          <input type="password" v-model="pw" placeholder="输入密码">
+        </label>
+      </div>
+      <section class="btn_wrap">
+        <div class="btn" @click="login">登录</div>
+      </section>
     </div>
+  </div>
 </template>
 
 <script>
-import {UserApi} from "@/api/user/user"
-import {mapMutations} from "vuex"
-import {setStorage} from "@/script/storage"
+import { UserApi } from "@/api/user/user";
+import { setStorage } from "@/script/storage";
+import { Indicator, Toast } from "mint-ui";
 export default {
   data() {
     return {
       name: "",
       pw: "",
-      userApi:null
+      userApi: null
     };
   },
   methods: {
@@ -45,22 +45,28 @@ export default {
           .then(r => {
             var r = r.data;
             if (r.status == 1) {
-              setStorage('token',r.token)
+              setStorage("token", r.token);
               this.$router.replace("/center");
             }
-            this.openToast(r.msg);
+            Toast({
+              message: r.msg,
+              position: "bottom"
+            });
+            Indicator.close();
           })
           .catch(e => {
             console.log(e);
           });
-      }else {
-        this.openToast("用户名或密码格式不正确");
+      } else {
+        Toast({
+          message: "用户名或密码格式不正确",
+          position: "bottom"
+        });
       }
-    },
-    ...mapMutations(['openToast'])
+    }
   },
-  created(){
-      this.userApi = new UserApi();
+  created() {
+    this.userApi = new UserApi();
   }
 };
 </script>

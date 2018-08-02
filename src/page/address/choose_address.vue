@@ -15,10 +15,10 @@
           <span>{{choose_city}}</span>
           <i :class="{'el-icon-arrow-down':page==2,'el-icon-arrow-up':page!=2}"></i>
         </div>
-        <div class="inp_wrap">
+        <label class="inp_wrap">
           <i class="el-icon-search"></i>
           <input type="text" v-model="search_key" placeholder="小区/写字楼/学校等" @focus="openSearch" @input="search_near">
-        </div>
+        </label>
       </div>
     </div>
     <transition name="el-fade-in-linear" mode="out-in">
@@ -26,7 +26,7 @@
         <div class="now_pos">
           <h3>当前位置</h3>
           <div class="pos">
-            <p>{{pos_text}}</p>
+            <router-link :to="{path:'index',query:{pos:pos_text}}" tag="p">{{pos_text}}</router-link>
             <div class="re_pos" @click="position">
               <i class="el-icon-location-outline"></i>
               重新定位
@@ -211,6 +211,11 @@ export default {
     setAddress(obj) {
       this.choose_address = obj;
       this.page = 1;
+      this.$router.replace({
+        path: "index",
+        query: { pos: this.choose_address.name }
+      });
+      // :to="{path:'index',query:{pos:item.address.name}}"
     },
     selectCity() {
       if (this.page == 2) {
@@ -233,28 +238,36 @@ export default {
       var citySearch = "";
       AMap.plugin("AMap.CitySearch", () => {
         citySearch = new AMap.CitySearch();
-      });
-      AMap.plugin("AMap.Geolocation", () => {
-        var geolocation = new AMap.Geolocation({
-          // 是否使用高精度定位，默认：true
-          enableHighAccuracy: false,
-          // 设置定位超时时间，默认：无穷大
-          timeout: 3000
-        });
-        geolocation.getCurrentPosition();
-        AMap.event.addListener(geolocation, "complete", data => {
-          this.pos = data;
-          this.pos_text = data.addressComponent.building;
-        });
-        AMap.event.addListener(geolocation, "error", err => {
-          //console.error(err);
-          citySearch.getLocalCity((status, result) => {
-            if (status === "complete" && result.info === "OK") {
-              // 查询成功，result即为当前所在城市信息
-              //console.log(result);
-              this.pos_text = this.city = this.choose_city = result.city;
-              this.setCity(result.city);
-            }
+        AMap.plugin("AMap.Geolocation", () => {
+          var geolocation = new AMap.Geolocation({
+            // 是否使用高精度定位，默认：true
+            enableHighAccuracy: false,
+            // 设置定位超时时间，默认：无穷大
+            timeout: 3000
+          });
+          geolocation.getCurrentPosition();
+          AMap.event.addListener(geolocation, "complete", data => {
+            this.pos = data;
+            this.pos_text = data.addressComponent.building;
+            citySearch.getLocalCity((status, result) => {
+              if (status === "complete" && result.info === "OK") {
+                // 查询成功，result即为当前所在城市信息
+                //console.log(result);
+                this.city = this.choose_city = result.city;
+                this.setCity(result.city);
+              }
+            });
+          });
+          AMap.event.addListener(geolocation, "error", err => {
+            //console.error(err);
+            citySearch.getLocalCity((status, result) => {
+              if (status === "complete" && result.info === "OK") {
+                // 查询成功，result即为当前所在城市信息
+                //console.log(result);
+                this.pos_text = this.city = this.choose_city = result.city;
+                this.setCity(result.city);
+              }
+            });
           });
         });
       });
@@ -273,6 +286,7 @@ export default {
             if (d1.status == 1) {
               this.city_obj = d1.data;
             }
+            Indicator.close();
           })
         )
         .catch(e => {
@@ -376,6 +390,7 @@ export default {
         }
       }
       .inp_wrap {
+        flex: 1;
         align-items: center;
         display: flex;
         i {
@@ -387,8 +402,6 @@ export default {
           flex: auto;
           background-color: initial;
           border: none;
-          height: 100%;
-          line-height: 90 / @r;
           font-size: 40 / @r;
           color: #666;
         }

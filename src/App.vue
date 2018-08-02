@@ -1,34 +1,18 @@
 <template>
   <div id="app">
-    <toast class="z100" v-if="showToast"></toast>
-    <keep-alive>
       <transition :name="transitionName">
         <router-view class="h100" />
       </transition>
-    </keep-alive>
-
   </div>
 </template>
 
 <script>
-import toast from "@/components/dialog/toast";
-import { mapState } from "vuex";
 export default {
   name: "App",
   data() {
     return {
       transitionName: "slide-left"
     };
-  },
-  components: {
-    toast
-  },
-  computed: {
-    ...mapState({
-      showToast: state => {
-        return state.toast.showToast;
-      }
-    })
   },
   watch: {
     $route: function(to, from) {

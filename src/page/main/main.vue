@@ -1,8 +1,10 @@
 <template>
   <div class="page">
+
     <transition name="fade-out">
-      <router-view class="body"></router-view>
+        <router-view class="body"></router-view>
     </transition>
+
     <cus-footer class="footer"></cus-footer>
   </div>
 </template>
@@ -36,7 +38,7 @@ export default {
   position: relative;
   .body {
     height: 100%;
-    padding-bottom: 147/@r;
+    padding-bottom: 147 / @r;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -56,7 +58,7 @@ export default {
     top: 0;
     left: 0;
     right: 0;
-    bottom: 147/@r;
+    bottom: 147 / @r;
     width: 100%;
     overflow: hidden;
   }
@@ -65,7 +67,7 @@ export default {
     top: 0;
     left: 0;
     right: 0;
-    bottom: 147/@r;
+    bottom: 147 / @r;
     width: 100%;
     z-index: 999;
     overflow: hidden;
@@ -75,7 +77,7 @@ export default {
     width: 100%;
     top: 0;
     left: 0;
-    bottom: 147/@r;
+    bottom: 147 / @r;
     z-index: 0;
     overflow: hidden;
   }

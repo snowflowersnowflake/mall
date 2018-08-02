@@ -75,6 +75,7 @@ export default {
           if(d.status==1){
             this.colData = d.data
           }
+          Indicator.close()
         })
         .catch(e => {
           console.log(e);

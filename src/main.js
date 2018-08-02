@@ -12,13 +12,19 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 import VueLazyload from 'vue-lazyload'
 import "font-awesome/css/font-awesome.min.css"
+import "@/style/icon/iconfont.css"
 import Mint from 'mint-ui';
 import 'mint-ui/lib/style.css'
 import { Toast, Indicator, MessageBox } from "mint-ui"
 import { getStorage } from "@/script/storage"
+import Es6Promise from 'es6-promise'
+Es6Promise.polyfill()
 axios.interceptors.request.use(config => {
   config.headers.authorization = getStorage("token")
-  Indicator.open("加载中...")
+  config.headers.dn = Date.now()
+  if (!config.headers.notIndicator) {
+    Indicator.open("加载中...")
+  }
   return config
 })
 axios.interceptors.response.use(response => {
@@ -27,8 +33,8 @@ axios.interceptors.response.use(response => {
   const url = response.config.url
   switch (status) {
     case -1:
-      if (url.indexOf("getCollections") > -1 || url.indexOf("getCart") > -1) {
-        MessageBox.confirm('尚未登录,是否前往登录页?').then(action => {
+      if (url.indexOf("getCollections") > -1 || url.indexOf("getCart") > -1 || url.indexOf("haveCart") > -1 || url.indexOf("getUserInfo") > -1) {
+        MessageBox.confirm('尚未登录,是否前往登录页?').then(() => {
           router.replace("/login")
         }).catch(e => { })
       } else {
@@ -36,6 +42,7 @@ axios.interceptors.response.use(response => {
           message: "未登录",
           position: "bottom"
         })
+        console.log(response.config.url)
         router.replace("/login")
       }
       break;
@@ -46,12 +53,13 @@ axios.interceptors.response.use(response => {
       })
       break;
     case 10:
-      console.log("数据库错误")
+      console.log('后台错误')
       break
     default:
   }
   return response
 }, err => {
+  Indicator.close()
   return Promise.reject(err)
 })
 
@@ -61,7 +69,7 @@ Vue.component('el-rate', Rate)
 Vue.use(Mint);
 Vue.use(VueLazyload, {
   loading: require('@/assets/loading.svg'),
-  error: require('@/assets/error.png')
+  //error: require('@/assets/error.png')
 })
 Vue.config.productionTip = false
 
@@ -69,9 +77,6 @@ var html = document.documentElement;
 var hWidth = html.getBoundingClientRect().width;
 html.style.fontSize = hWidth / 18 + "px";
 
-window.onresize = function () {
-  window.location.reload()
-}
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

@@ -11,10 +11,14 @@
     </header>
     <store-head ref="storeHead" class="head" @srollTotop="ctrlShadow"></store-head>
     <div class="scroll_wrap">
-      <scroll :listenScroll="true" :probeType="3" :pullUpLoad="true" :pullDownRefresh="true" @pulldown="init_" @scrollToEnd="getList" ref="scroll" class="scroll">
+      <scroll :listenScroll="true" :probeType="3" :pullUpLoad="true" :pullDownRefresh="true" @pulldown="init_" @scrollToEnd="getList" ref="scroll" @scroll="hideCart" class="scroll">
         <list :data="storeData"></list>
       </scroll>
     </div>
+    <transition name="cartin">
+      <cart-btn v-show="showCart"></cart-btn>
+    </transition>
+
     <transition name="el-fade-in-linear">
       <div class="shadow" @click="closeShadow" v-show="showShadow"></div>
     </transition>
@@ -28,19 +32,23 @@ import { IndexCtrl } from "@/api/index";
 import storeHead from "@/components/storelist/head";
 import list from "@/components/storelist/store";
 import scroll from "@/components/scroll";
+import cartBtn from "@/components/storelist/cart";
 export default {
   data() {
     return {
       storeData: [],
       title: this.$route.query.title,
       showShadow: false,
-      page: 0
+      page: 0,
+      showCart: true,
+      timeout: null
     };
   },
   components: {
     storeHead,
     list,
-    scroll
+    scroll,
+    cartBtn
   },
   computed: {
     ...mapState({
@@ -57,7 +65,6 @@ export default {
       this.showShadow = bo;
     },
     getList() {
-      Indicator.open("加载中");
       this.indexCtrl
         .getStoreList({
           page: this.page,
@@ -97,10 +104,17 @@ export default {
       this.$refs.scroll.enable();
       this.$refs.storeHead.controller_show = 0;
     },
+    hideCart() {
+      this.showCart = false;
+      clearTimeout(this.timeout);
+      this.timeout = setTimeout(() => {
+        this.showCart = true;
+      }, 500);
+    },
     init_() {
       this.indexCtrl = new IndexCtrl();
       this.page = 0;
-      this.storeData = []
+      this.storeData = [];
       this.getList();
     }
   },
@@ -181,5 +195,11 @@ export default {
     bottom: 0;
     z-index: 10;
   }
+}
+.cartin-enter-active, .cartin-leave-active {
+  transition: 0.5s;
+}
+.cartin-enter, .cartin-leave-to {
+  transform: translateX(200%)
 }
 </style>

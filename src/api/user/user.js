@@ -8,14 +8,16 @@ export class UserApi extends BaseApi {
         let { name, pw } = params
         return axios.post(`${this.apiUrl}reg`,{
             name,
-            pw
+            pw,
+            dn: Date.now()
         })
     }
     login(params = { name: "", pw: "" }) {
         let { name, pw } = params
         return axios.post(`${this.apiUrl}login`,{
             name,
-            pw
+            pw,
+            dn: Date.now()
         })
     }
 }
