@@ -208,8 +208,8 @@ export default {
     bottom: 0;
   }
   .nodata {
-    padding-top: 200/@r;
-    font-size: 60/@r;
+    padding-top: 200 / @r;
+    font-size: 60 / @r;
     color: @blue;
     text-align: center;
   }
@@ -237,8 +237,6 @@ export default {
           .left {
             flex: 1;
             width: 0;
-            span {
-            }
           }
           .right {
             flex: none;

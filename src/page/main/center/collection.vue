@@ -97,6 +97,7 @@ export default {
 <style lang='less'>
 @import "~@/style/base.less";
 .collection_page {
+  background-color: #fff;
   display: flex;
   flex-direction: column;
   header {

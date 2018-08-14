@@ -31,21 +31,6 @@ const Reg = r => require.ensure([], () => r(require('@/page/login/reg'), 'login'
 Vue.use(Router)
 
 export default new Router({
-  scrollBehavior(to, from, savedPosition) {
-    if (savedPosition && to.meta.keepAlive) {
-      let scrollTop = store.state.common.scrollPos[to.name] || 0
-      if (!scrollTop) {
-        return
-      }
-      // 对scroll元素进行设置
-      setTimeout(() => {
-        let documentElem = document.querySelector('.v-content')
-        if (documentElem) {
-          documentElem.scrollTop = scrollTop
-        }
-      }, 0)
-    }
-  },
   routes: [
     {
       path: '/',
@@ -56,19 +41,23 @@ export default new Router({
       children: [
         {
           path: 'index',
+          name: "Index",
           meta: { index: 0 },
           component: CusIndex,
         },
         {
           path: 'found',
+          name: "Found",
           meta: { index: 0 },
           component: Found,
         }, {
           path: 'bills',
+          name: "Bills",
           meta: { index: 0 },
           component: Bills,
         }, {
           path: 'center',
+          name: "Center",
           meta: { index: 0 },
           component: Center,
         },
@@ -83,19 +72,19 @@ export default new Router({
       children: [
         {
           path: 'product',
-          name: 'product',
+          name: 'Product',
           meta: { index: 2 },
           component: Product
         },
         {
           path: 'evaluation',
-          name: 'evaluation',
+          name: 'Evaluation',
           meta: { index: 2 },
           component: Evaluation
         },
         {
           path: 'seller',
-          name: 'seller',
+          name: 'Seller',
           meta: { index: 2 },
           component: Seller
         }
@@ -145,13 +134,13 @@ export default new Router({
     },
     {
       path: '/login',
-      name: "login",
+      name: "Login",
       component: Login,
       meta: { index: 10 }
     },
     {
       path: '/reg',
-      name: "reg",
+      name: "Reg",
       component: Reg,
       meta: { index: 20 }
     },

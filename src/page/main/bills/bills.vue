@@ -1,5 +1,5 @@
 <template>
-  <div class="bill_list">
+  <div class="bill_list" v-if="initEnd">
     <header>
       <h3>订单</h3>
     </header>
@@ -54,7 +54,8 @@ export default {
   data() {
     return {
       list: [],
-      page: 0
+      page: 0,
+      initEnd:false
     };
   },
   methods: {
@@ -78,6 +79,9 @@ export default {
               message: d.msg,
               position: "bottom"
             });
+          }
+          if(!this.initEnd) {
+            this.initEnd = true
           }
           Indicator.close();
         })
@@ -125,6 +129,7 @@ export default {
 @import "~@/style/base.less";
 .bill_list {
   display: flex;
+  background-color: #fff;
   header {
     position: relative;
     background: linear-gradient(to right, #02aaff, #0387ff);

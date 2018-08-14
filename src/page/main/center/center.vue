@@ -1,5 +1,5 @@
 <template>
-  <div class="bg_gray">
+  <div class="bg_gray" v-if="initEnd">
     <div class="mycenter_header">
       <div class="header_top">
         <div class="left">
@@ -159,7 +159,8 @@ export default {
     return {
       nickName: "未登录",
       tel: "未填写",
-      coin:0
+      coin:0,
+      initEnd:false
     };
   },
   methods: {
@@ -184,6 +185,7 @@ export default {
             this.tel = d.data.tel;
           }
         }
+        this.initEnd = true
         Indicator.close()
       });
     },

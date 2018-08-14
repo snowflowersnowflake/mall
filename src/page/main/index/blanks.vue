@@ -5,11 +5,11 @@
                 <h3>限量抢购</h3>
                 <p>丰盛晚餐9.9元起</p>
                 <section>
-                    <span>2757人</span>正在抢></section>
+                    <span>{{Math.round(Math.random()*1000+1000)}}人</span>正在抢></section>
                 <img src="static/index/blank-1.png" alt="">
             </router-link>
             <router-link to="list?title=果蔬生鲜" tag="li">
-                <h3>周4水果日</h3>
+                <h3>周{{new Date().getDay()}}水果日</h3>
                 <p>大牌满立减20元</p>
                 <section>新鲜抢购></section>
                 <img src="static/index/blank-2.png" alt="">

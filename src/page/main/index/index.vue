@@ -1,5 +1,5 @@
 <template>
-  <div class="page">
+  <div class="page" v-if="initEnd">
     <header id="fake_head" style="position:absolute">
       <el-collapse-transition>
         <div class="search_wrap" v-show="showHead">
@@ -96,12 +96,13 @@ export default {
       page: 0,
       posy: "",
       showCart: true,
-      timeout: null
+      timeout: null,
+      initEnd: false
     };
   },
   methods: {
     _scroll(pos) {
-      this.hideCart()
+      this.hideCart();
       var bo = pos.y <= -searchTop;
       this.posy = pos.y;
       if (this.showHead != bo) {
@@ -170,9 +171,17 @@ export default {
                 i.show_offer = false;
                 return i;
               });
-              this.storeData = arr;
+              
             }
-            Indicator.close();
+            this.initEnd = true;
+            Indicator.close()
+            this.$nextTick(() => {
+              window.searchTop = this.$refs.hideable.clientHeight;
+              window.indexWrapHeight = this.$refs.index_wrap.offsetHeight;
+              window.searchBoxHeight = this.$refs.searchBox.offsetHeight;
+              this.storeData = arr;
+              //this.storeData.push(this.storeData.pop())
+            });
           })
         )
         .catch(e => {
@@ -180,7 +189,7 @@ export default {
         });
     },
     loadTop() {
-      this.$route.query.pos = ''
+      this.$route.query.pos = "";
       this.init_();
     },
     loadBottom() {
@@ -239,7 +248,9 @@ export default {
           });
           geolocation.getCurrentPosition();
           AMap.event.addListener(geolocation, "complete", data => {
-            this.address = data.addressComponent.building;
+            console.log(data);
+            this.address =
+              data.addressComponent.building || data.formattedAddress;
           });
           AMap.event.addListener(geolocation, "error", err => {
             //console.error(err);
@@ -274,11 +285,7 @@ export default {
     lisss,
     cartBtn
   },
-  mounted() {
-    window.searchTop = this.$refs.hideable.clientHeight;
-    window.indexWrapHeight = this.$refs.index_wrap.offsetHeight;
-    window.searchBoxHeight = this.$refs.searchBox.offsetHeight;
-  },
+  mounted() {},
   created() {
     this.indexCtrl = new IndexCtrl();
     this.init_();
@@ -317,6 +324,7 @@ export default {
   display: flex;
   flex-direction: column;
   position: relative;
+  background-color: #fff;
   #fake_head {
     position: absolute;
     top: 0;
@@ -342,10 +350,10 @@ export default {
           color: #fff;
           line-height: 90 / @r;
           display: flex;
-          flex:none;
+          flex: none;
           align-items: center;
-           max-width: 70%;
-           .text_one_line;
+          max-width: 70%;
+          .text_one_line;
           span {
             margin-left: 28 / @r;
             position: relative;

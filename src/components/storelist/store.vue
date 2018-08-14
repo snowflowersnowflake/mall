@@ -1,6 +1,6 @@
 <template>
-  <div class="store_wrap">
-    <router-link v-if="refeash" tag="div" :to="{path:'/store/product',query:{id:item._id}}" class="shop" v-for="(item,index) in dd" :key="index">
+  <div class="store_wrap" >
+    <router-link tag="div" :to="{path:'/store/product',query:{id:item._id}}" class="shop" v-for="(item,index) in dd" :key="index">
       <div class="logo">
         <img v-lazy="item.img_url" :key="item.img_url" alt="">
       </div>
@@ -62,7 +62,6 @@ export default {
   },
   data() {
     return {
-      refeash: true,
       dd:[]
     };
   },
@@ -154,6 +153,7 @@ export default {
         return a[attr] < b[attr];
       });
       }
+      console.log(arr||[])
       return arr || [];
     },
     ...mapState({
@@ -182,6 +182,7 @@ export default {
   padding: 0 30 / @r;
   min-height: 100%;
   position: relative;
+  background-color: #fff;
 }
 .shop {
   display: flex;

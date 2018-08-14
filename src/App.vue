@@ -1,5 +1,8 @@
 <template>
   <div id="app">
+      <div class="loading">
+        <span>Loading...</span>
+      </div>
       <transition :name="transitionName">
         <router-view class="h100" />
       </transition>
@@ -31,10 +34,26 @@ export default {
 @import "~@/style/base.less";
 #app {
   height: 100%;
-  background-color: #000;
+  background-color: #bbb;
+  .loading {
+    height:100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    span {
+      font-size: 120/@r;
+      color: #999;
+      font-weight: bold;
+    }
+  }
   .h100 {
+    position:absolute;
+    top: 0;
+    left: 0;
     height: 100%;
-    background-color: #fff;
+    width: 100%;
+    z-index: 1;
+    
   }
   .z100 {
     z-index: 999;

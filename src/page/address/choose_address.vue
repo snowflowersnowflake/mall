@@ -131,11 +131,7 @@
 </template>
 
 <script>
-var pos = {
-  lat: 30.53347,
-  lng: 114.3308
-};
-pos = new AMap.LngLat(114.3308, 30.53347);
+
 var pinyin = require("pinyin");
 import scroll from "@/components/scroll";
 import { setStorage, getStorage } from "@/script/storage";

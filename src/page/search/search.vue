@@ -194,6 +194,7 @@ export default {
 <style lang='less' scoped>
 @import "~@/style/base.less";
 .search_page {
+  background-color: #fff;
 }
 .search_head {
   height: 194 / @r;

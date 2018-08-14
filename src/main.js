@@ -16,8 +16,11 @@ import "@/style/icon/iconfont.css"
 import Mint from 'mint-ui';
 import 'mint-ui/lib/style.css'
 import { Toast, Indicator, MessageBox } from "mint-ui"
-import { getStorage } from "@/script/storage"
+import { getStorage, rmStorage } from "@/script/storage"
 import Es6Promise from 'es6-promise'
+
+var allowNotLoginApi = ['getUserInfo', 'haveCart', 'getCart', 'getCollections']
+
 Es6Promise.polyfill()
 axios.interceptors.request.use(config => {
   config.headers.authorization = getStorage("token")
@@ -33,18 +36,26 @@ axios.interceptors.response.use(response => {
   const url = response.config.url
   switch (status) {
     case -1:
-      if (url.indexOf("getCollections") > -1 || url.indexOf("getCart") > -1 || url.indexOf("haveCart") > -1 || url.indexOf("getUserInfo") > -1) {
-        MessageBox.confirm('尚未登录,是否前往登录页?').then(() => {
+      rmStorage('token');
+      var isAllow = allowNotLoginApi.some(item => {
+        return url.indexOf(item) > -1
+      })
+      if (!isAllow) {
+        console.log(url)
+        if (url.indexOf("addCart") > -1 || url.indexOf("addCart") > -1 || url.indexOf("editCollections") > -1) {
+          Indicator.close()
+          MessageBox.confirm('尚未登录,是否前往登录页?').then(() => {
+            router.replace("/login")
+          }).catch(e => { })
+        } else {
+          Toast({
+            message: "未登录",
+            position: "bottom"
+          })
           router.replace("/login")
-        }).catch(e => { })
-      } else {
-        Toast({
-          message: "未登录",
-          position: "bottom"
-        })
-        console.log(response.config.url)
-        router.replace("/login")
+        }
       }
+     
       break;
     case 0:
       Toast({
@@ -57,6 +68,7 @@ axios.interceptors.response.use(response => {
       break
     default:
   }
+  Indicator.close()
   return response
 }, err => {
   Indicator.close()
@@ -76,6 +88,26 @@ Vue.config.productionTip = false
 var html = document.documentElement;
 var hWidth = html.getBoundingClientRect().width;
 html.style.fontSize = hWidth / 18 + "px";
+
+const AllowNotLogin = ['Index', 'Found', 'Center', 'StoreList', 'Product', 'Evaluation', 'Seller', 'Login', 'Reg']
+
+router.beforeEach((to, from, next) => {
+  var token = getStorage('token');
+
+  next()
+  if (token) {
+    next()
+  } else {
+    var allowNext = AllowNotLogin.some(item => {
+      return item == to.name
+    })
+    if (allowNext) {
+      next()
+    } else {
+      next({ path: "/login", /* replace: true */ })
+    }
+  }
+})
 
 /* eslint-disable no-new */
 new Vue({

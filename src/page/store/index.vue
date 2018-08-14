@@ -161,19 +161,19 @@ export default {
               this.$router.back(-1);
             }
             var collection = collection.data;
-            if(collection.status==1){
-              collection.data.forEach(item=>{
-                if(item._id==id){
-                  this.iscollect = true
+            if (collection.status == 1) {
+              collection.data.forEach(item => {
+                if (item._id == id) {
+                  this.iscollect = true;
                 }
-              })
+              });
             }
             //this.iscollect = collection.data[this.store_msg._id];
-            Indicator.close()
+            Indicator.close();
           })
         )
         .catch(e => {
-          Indicator.close()
+          Indicator.close();
           console.log(e);
         });
     },
@@ -183,7 +183,7 @@ export default {
         .then(d => {
           var d = d.data;
           this.iscollect = d.data[this.store_msg._id];
-          Indicator.close()
+          Indicator.close();
         })
         .catch(e => {
           console.log(e);
@@ -205,8 +205,9 @@ export default {
         let posLeft = oSpan.offsetLeft;
         let wid = oSpan.offsetWidth + "px";
         return { pos: `translateX(${posLeft}px)`, wid };
+      } else {
+        return "inherit";
       }
-      return "inherit";
     },
     first_offer() {
       var offer = this.store_msg.offer;
@@ -253,13 +254,13 @@ export default {
   watch: {
     $route(to, from) {
       switch (to.name) {
-        case "product":
+        case "Product":
           this.navIndex = 0;
           break;
-        case "evaluation":
+        case "Evaluation":
           this.navIndex = 1;
           break;
-        case "seller":
+        case "Seller":
           this.navIndex = 2;
           break;
         default:
@@ -290,6 +291,7 @@ export default {
 .store_page {
   height: 100%;
   display: flex;
+  background-color: #fff;
   flex-direction: column;
   ul.offer_list {
     overflow: hidden;
